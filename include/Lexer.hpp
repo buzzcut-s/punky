@@ -18,7 +18,6 @@ private:
     std::unordered_map<std::string, TokenType> m_keywords;
 
     std::string           m_line;
-    std::string::iterator m_iter;
     std::string::iterator m_read_iter;
 
     void consume();

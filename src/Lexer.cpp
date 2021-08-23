@@ -99,15 +99,14 @@ void Lexer::consume()
     if (m_read_iter == m_line.end())
         return;
 
-    m_iter = m_read_iter;
     ++m_read_iter;
 }
 
 char Lexer::peek()
 {
-    if (m_read_iter == m_line.end())
+    if (m_read_iter + 1 == m_line.end())
         return 0;
-    return *m_read_iter;
+    return *(m_read_iter + 1);
 }
 
 void Lexer::skip_whitespace()
