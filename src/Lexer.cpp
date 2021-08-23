@@ -1,5 +1,6 @@
 #include "../include/Lexer.hpp"
 
+#include <optional>
 #include <string>
 
 #include "../include/Token.hpp"
@@ -20,7 +21,7 @@ Token Lexer::next_token()
     switch (*m_read_iter)
     {
         case '=':
-            if (peek() == '=')
+            if (peek().has_value() && peek().value() == '=')
             {
                 consume();
                 tok = make_token(TokenType::EqualEqual, std::nullopt);
@@ -29,7 +30,7 @@ Token Lexer::next_token()
                 tok = make_token(TokenType::Equal, std::nullopt);
             break;
         case '!':
-            if (peek() == '=')
+            if (peek().has_value() && peek().value() == '=')
             {
                 consume();
                 tok = make_token(TokenType::BangEqual, std::nullopt);
@@ -102,10 +103,10 @@ void Lexer::consume()
     ++m_read_iter;
 }
 
-char Lexer::peek()
+auto Lexer::peek() -> std::optional<char>
 {
     if (m_read_iter + 1 == m_line.end())
-        return 0;
+        return std::nullopt;
     return *(m_read_iter + 1);
 }
 

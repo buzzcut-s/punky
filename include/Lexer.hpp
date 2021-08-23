@@ -1,6 +1,7 @@
 #ifndef LEXER_HPP
 #define LEXER_HPP
 
+#include <optional>
 #include <string>
 #include <unordered_map>
 
@@ -21,7 +22,8 @@ private:
     std::string::iterator m_read_iter;
 
     void consume();
-    char peek();
+    auto peek() -> std::optional<char>;
+
     void skip_whitespace();
 
     std::string read_identifier();
