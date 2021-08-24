@@ -142,6 +142,26 @@ private:
     std::unique_ptr<ExprNode> m_ret_value;
 };
 
+class ExpressionStmt : public StmtNode
+{
+public:
+    ExpressionStmt()                            = default;
+    ExpressionStmt(ExpressionStmt const& other) = delete;
+    ExpressionStmt& operator=(ExpressionStmt const& other) = delete;
+    ExpressionStmt(ExpressionStmt&& other)                 = default;
+    ExpressionStmt& operator=(ExpressionStmt&& other) = default;
+    ~ExpressionStmt() override                        = default;
+
+    explicit ExpressionStmt(Token tok) :
+      StmtNode{std::move(tok)}
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    std::unique_ptr<ExprNode> m_expression;
+};
+
 }  // namespace ast
 
 #endif  // AST_HPP

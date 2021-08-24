@@ -98,6 +98,16 @@ void Parser::peek_error(const TokenType& type)
                           + "] instead\n");
 }
 
+void Parser::register_prefix(TokenType type, PrefixParseFn parse_fn)
+{
+    m_prefix_parse_fns[type] = std::move(parse_fn);
+}
+
+void Parser::register_infix(TokenType type, InfixParseFn parse_fn)
+{
+    m_infix_parse_fns[type] = std::move(parse_fn);
+}
+
 bool Parser::expect_peek(const TokenType& type)
 {
     if (peek_type_is(type))

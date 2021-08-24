@@ -66,4 +66,11 @@ std::string ReturnStmt::to_string() const
     return ret_str;
 }
 
+std::string ExpressionStmt::to_string() const
+{
+    if (m_expression)
+        return m_expression->to_string();
+    return "";
+}
+
 }  // namespace ast
