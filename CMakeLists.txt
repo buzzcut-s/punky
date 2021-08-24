@@ -9,4 +9,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_executable(punky src/main.cpp src/readline.cpp src/utils.cpp src/Lexer.cpp
-                     src/Token.cpp)
+                     src/Token.cpp src/ast.cpp)
