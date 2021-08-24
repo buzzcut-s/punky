@@ -16,8 +16,9 @@ public:
     Token next_token();
 
 private:
-    std::string           m_line;
-    std::string::iterator m_read_iter;
+    std::string                 m_line;
+    std::string::const_iterator m_it;
+    char                        m_ch;
 
     std::unordered_map<std::string, TokenType> m_keywords;
 

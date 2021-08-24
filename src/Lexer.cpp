@@ -9,7 +9,8 @@
 
 Lexer::Lexer(std::string line) :
   m_line{std::move(line)},
-  m_read_iter{m_line.begin()},
+  m_it{m_line.cbegin()},
+  m_ch{*m_it},
   m_keywords{make_keywords()}
 {
 }
@@ -19,7 +20,7 @@ Token Lexer::next_token()
     skip_whitespace();
 
     auto tok = Token{};
-    switch (*m_read_iter)
+    switch (m_ch)
     {
         case '=':
             if (peek().has_value() && peek().value() == '=')
@@ -76,17 +77,16 @@ Token Lexer::next_token()
             tok = make_token(TokenType::RightBrace, std::nullopt);
             break;
         case 0:
-            tok = make_token(TokenType::EOS, std::nullopt);
-            break;
+            return make_token(TokenType::EOS, std::nullopt);
         default:
-            if (utils::is_letter(*m_read_iter))
+            if (utils::is_letter(m_ch))
             {
                 auto       ident = read_identifier();
                 const auto type  = token_type(ident);
                 return type == TokenType::Identifier ? make_token(type, std::move(ident))
                                                      : make_token(type, std::nullopt);
             }
-            else if (utils::is_digit(*m_read_iter))
+            else if (utils::is_digit(m_ch))
                 return make_token(TokenType::Int, read_number());
             else
                 tok = make_token(TokenType::Illegal, std::nullopt);
@@ -99,37 +99,42 @@ Token Lexer::next_token()
 
 void Lexer::consume()
 {
-    if (m_read_iter != m_line.end())
-        ++m_read_iter;
+    if (std::next(m_it) != m_line.cend())
+    {
+        ++m_it;
+        m_ch = *m_it;
+    }
+    else
+        m_ch = 0;
 }
 
 auto Lexer::peek() const -> std::optional<char>
 {
-    if (std::next(m_read_iter) != m_line.end())
-        return *std::next(m_read_iter);
+    if (std::next(m_it) != m_line.end())
+        return *std::next(m_it);
     return std::nullopt;
 }
 
 void Lexer::skip_whitespace()
 {
-    while (utils::is_whitespace(*m_read_iter))
+    while (utils::is_whitespace(m_ch))
         consume();
 }
 
 std::string Lexer::read_identifier()
 {
-    const auto ident_begin = m_read_iter;
-    while (utils::is_letter(*m_read_iter))
+    const auto ident_begin = m_it;
+    while (utils::is_letter(m_ch))
         consume();
-    return std::string{ident_begin, m_read_iter};
+    return std::string{ident_begin, m_it};
 }
 
 std::string Lexer::read_number()
 {
-    const auto num_begin = m_read_iter;
-    while (utils::is_digit(*m_read_iter))
+    const auto num_begin = m_it;
+    while (utils::is_digit(m_ch))
         consume();
-    return std::string{num_begin, m_read_iter};
+    return std::string{num_begin, m_it};
 }
 
 auto Lexer::token_type(const std::string& tok) const -> TokenType
