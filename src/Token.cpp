@@ -1,6 +1,5 @@
 #include "../include/Token.hpp"
 
-#include <sstream>
 #include <string>
 #include <unordered_map>
 
@@ -22,7 +21,7 @@ auto make_keywords() -> std::unordered_map<std::string, TokenType>
     };
 }
 
-static std::string tok_to_string_impl(const TokenType& type)
+std::string type_to_string(const TokenType& type)
 {
     switch (type)
     {
@@ -102,13 +101,12 @@ static std::string tok_to_string_impl(const TokenType& type)
     return "Can't be reached";
 }
 
-std::string token_to_string(const Token& tok)
+std::string format_token(const Token& tok)
 {
-    std::stringstream tok_ss;
-    tok_ss << "{";
-    tok_ss << " type: " << tok_to_string_impl(tok.m_type) << ",";
+    std::string tok_str{"{"};
+    tok_str.append(" type: " + type_to_string(tok.m_type) + ",");
     if (tok.m_literal.has_value())
-        tok_ss << " literal: " << tok.m_literal.value() << " ";
-    tok_ss << "}";
-    return tok_ss.str();
+        tok_str.append(" literal: " + tok.m_literal.value() + " ");
+    tok_str.append("}");
+    return tok_str;
 }

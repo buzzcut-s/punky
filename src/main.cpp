@@ -17,7 +17,7 @@ int main()
         std::cout << "Printing lexer output :" << std::endl;
         while (token.m_type != TokenType::EOS)
         {
-            std::cout << token_to_string(token) << std::endl;
+            std::cout << format_token(token) << std::endl;
             token = lex.next_token();
         }
     }
