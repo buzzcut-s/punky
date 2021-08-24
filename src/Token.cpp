@@ -42,39 +42,39 @@ std::string type_to_string(const TokenType& type)
         case TokenType::Dot:
             return "DOT";
         case TokenType::Minus:
-            return "MINUS";
+            return "-";
         case TokenType::Plus:
-            return "PLUS";
+            return "+";
         case TokenType::Slash:
-            return "SLASH";
+            return "/";
         case TokenType::Asterisk:
-            return "STAR";
+            return "*";
         case TokenType::Colon:
-            return "COLON";
+            return ":";
         case TokenType::Semicolon:
-            return "SEMICOLON";
+            return ";";
         case TokenType::Bang:
-            return "BANG";
+            return "!";
         case TokenType::BangEqual:
-            return "BANG_EQUAL";
+            return "!=";
         case TokenType::Equal:
-            return "EQUAL";
+            return "=";
         case TokenType::EqualEqual:
-            return "EQUAL_EQUAL";
+            return "==";
         case TokenType::Greater:
-            return "GREATER";
+            return ">";
         case TokenType::GreaterEqual:
-            return "GREATER_EQUAL";
+            return ">=";
         case TokenType::Less:
-            return "LESS";
+            return "<";
         case TokenType::LessEqual:
-            return "LESS_EQUAL";
+            return "<=";
         case TokenType::Identifier:
-            return "IDENTIFIER";
+            return "IDENTIFIER - UNREACHABLE";
         case TokenType::String:
             return "STRING";
         case TokenType::Int:
-            return "INT";
+            return "INT - UNREACHABLE";
         case TokenType::Func:
             return "FUNC";
         case TokenType::Let:
@@ -90,11 +90,11 @@ std::string type_to_string(const TokenType& type)
         case TokenType::Return:
             return "RETURN";
         case TokenType::Illegal:
-            return "ILLEGAL";
+            return "ILLEGAL - UNREACHABLE";
         case TokenType::EOS:
-            return "EOS";
+            return "EOS - UNREACHABLE";
         default:
-            return "DEFAULT";
+            return "DEFAULT - UNREACHABLE";
     }
 }
 
