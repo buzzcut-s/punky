@@ -16,20 +16,20 @@ public:
     Token next_token();
 
 private:
-    std::unordered_map<std::string, TokenType> m_keywords;
-
     std::string           m_line;
     std::string::iterator m_read_iter;
 
+    std::unordered_map<std::string, TokenType> m_keywords;
+
     void consume();
-    auto peek() -> std::optional<char>;
+    auto peek() const -> std::optional<char>;
 
     void skip_whitespace();
 
     std::string read_identifier();
     std::string read_number();
 
-    TokenType token_type(const std::string& tok);
+    auto token_type(const std::string& tok) const -> TokenType;
 };
 
 #endif  // LEXER_HPP

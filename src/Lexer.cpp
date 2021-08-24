@@ -1,5 +1,6 @@
 #include "../include/Lexer.hpp"
 
+#include <iterator>
 #include <optional>
 #include <string>
 
@@ -7,9 +8,9 @@
 #include "../include/utils.hpp"
 
 Lexer::Lexer(std::string line) :
-  m_keywords{make_keywords()},
   m_line{std::move(line)},
-  m_read_iter{m_line.begin()}
+  m_read_iter{m_line.begin()},
+  m_keywords{make_keywords()}
 {
 }
 
@@ -80,9 +81,10 @@ Token Lexer::next_token()
         default:
             if (utils::is_letter(*m_read_iter))
             {
-                auto ident = read_identifier();
-                auto type  = token_type(ident);
-                return make_token(type, std::move(ident));
+                auto       ident = read_identifier();
+                const auto type  = token_type(ident);
+                return type == TokenType::Identifier ? make_token(type, std::move(ident))
+                                                     : make_token(type, std::nullopt);
             }
             else if (utils::is_digit(*m_read_iter))
                 return make_token(TokenType::Number, read_number());
@@ -97,17 +99,15 @@ Token Lexer::next_token()
 
 void Lexer::consume()
 {
-    if (m_read_iter == m_line.end())
-        return;
-
-    ++m_read_iter;
+    if (m_read_iter != m_line.end())
+        ++m_read_iter;
 }
 
-auto Lexer::peek() -> std::optional<char>
+auto Lexer::peek() const -> std::optional<char>
 {
-    if (m_read_iter + 1 == m_line.end())
-        return std::nullopt;
-    return *(m_read_iter + 1);
+    if (std::next(m_read_iter) != m_line.end())
+        return *std::next(m_read_iter);
+    return std::nullopt;
 }
 
 void Lexer::skip_whitespace()
@@ -118,29 +118,23 @@ void Lexer::skip_whitespace()
 
 std::string Lexer::read_identifier()
 {
-    std::string ident;
+    const auto ident_begin = m_read_iter;
     while (utils::is_letter(*m_read_iter))
-    {
-        ident.push_back(*m_read_iter);
         consume();
-    }
-    return ident;
+    return std::string{ident_begin, m_read_iter};
 }
 
 std::string Lexer::read_number()
 {
-    std::string num;
+    const auto num_begin = m_read_iter;
     while (utils::is_digit(*m_read_iter))
-    {
-        num.push_back(*m_read_iter);
         consume();
-    }
-    return num;
+    return std::string{num_begin, m_read_iter};
 }
 
-TokenType Lexer::token_type(const std::string& tok)
+auto Lexer::token_type(const std::string& tok) const -> TokenType
 {
-    if (auto res = m_keywords.find(tok); res != m_keywords.cend())
+    if (const auto res = m_keywords.find(tok); res != m_keywords.end())
         return res->second;
     return TokenType::Identifier;
 }
