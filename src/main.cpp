@@ -24,10 +24,12 @@ int main()
             token = lex.next_token();
         }
         */
+
         auto par  = parser::Parser{lex};
         auto prog = par.parse_program();
 
-        std::cout << prog->to_string();
+        if (prog)
+            std::cout << prog->to_string();
 
         auto errs = par.errors();
         for (const auto& err : errs)

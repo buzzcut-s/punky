@@ -63,11 +63,12 @@ private:
     auto parse_let_statement() -> std::unique_ptr<ast::LetStmt>;
     auto parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>;
     auto parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt>;
-    auto parse_expression(PrecedenceLevel prec_lv) -> std::unique_ptr<ast::ExprNode>;
 
-    auto parse_identifier() -> std::unique_ptr<ast::ExprNode>;
-    auto parse_int_literal() -> std::unique_ptr<ast::ExprNode>;
-    auto parse_prefix_expression() -> std::unique_ptr<ast::ExprNode>;
+    auto parse_expression(PrecedenceLevel prec_lv) -> ExprNodePtr;
+
+    auto parse_identifier() -> ExprNodePtr;
+    auto parse_int_literal() -> ExprNodePtr;
+    auto parse_prefix_expression() -> ExprNodePtr;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;
@@ -75,8 +76,8 @@ private:
     bool expect_peek(const TokenType& type);
     void peek_error(const TokenType& type);
 
-    void register_prefix(TokenType type, PrefixParseFn parse_fn);
-    void register_infix(TokenType type, InfixParseFn parse_fn);
+    void register_prefix(TokenType type, PrefixParseFn pre_parse_fn);
+    void register_infix(TokenType type, InfixParseFn in_parse_fn);
 };
 
 }  // namespace parser

@@ -48,11 +48,6 @@ std::string LetStmt::to_string() const
     return let_str;
 }
 
-void LetStmt::set_ident(Identifier ident)
-{
-    m_name = std::move(ident);
-}
-
 std::string Identifier::to_string() const
 {
     return token_literal();
@@ -73,11 +68,6 @@ std::string ExpressionStmt::to_string() const
     return "";
 }
 
-void ExpressionStmt::set_expression(std::unique_ptr<ExprNode> expression)
-{
-    m_expression = std::move(expression);
-}
-
 std::string IntLiteral::to_string() const
 {
     return std::to_string(m_int_value);
@@ -85,7 +75,9 @@ std::string IntLiteral::to_string() const
 
 std::string PrefixExpression::to_string() const
 {
-    return "(" + token_literal() + " " + m_right->to_string() + ")";
+    if (m_right)
+        return "(" + token_literal() + " " + m_right->to_string() + ")";
+    return "";
 }
 
 }  // namespace ast

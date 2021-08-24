@@ -109,13 +109,12 @@ public:
     LetStmt& operator=(LetStmt&& other) = default;
     ~LetStmt() override                 = default;
 
-    explicit LetStmt(Token tok) :
-      StmtNode{std::move(tok)}
+    explicit LetStmt(Token tok, Identifier name) :
+      StmtNode{std::move(tok)},
+      m_name(std::move(name))
     {}
 
     [[nodiscard]] std::string to_string() const override;
-
-    void set_ident(Identifier ident);
 
 private:
     Identifier                m_name;
@@ -152,13 +151,12 @@ public:
     ExpressionStmt& operator=(ExpressionStmt&& other) = default;
     ~ExpressionStmt() override                        = default;
 
-    explicit ExpressionStmt(Token tok) :
-      StmtNode{std::move(tok)}
+    explicit ExpressionStmt(Token tok, std::unique_ptr<ExprNode> expression) :
+      StmtNode{std::move(tok)},
+      m_expression{std::move(expression)}
     {}
 
     [[nodiscard]] std::string to_string() const override;
-
-    void set_expression(std::unique_ptr<ExprNode> expression);
 
 private:
     std::unique_ptr<ExprNode> m_expression;

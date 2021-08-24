@@ -55,13 +55,13 @@ auto Parser::parse_statement() -> std::unique_ptr<ast::StmtNode>
 
 auto Parser::parse_let_statement() -> std::unique_ptr<ast::LetStmt>
 {
-    auto let_stmt = std::make_unique<ast::LetStmt>(m_curr_tok);
+    auto let_tok = m_curr_tok;
 
     if (!expect_peek(TokenType::Identifier))
         return nullptr;
 
-    auto ident = ast::Identifier(std::move(m_curr_tok));
-    let_stmt->set_ident(std::move(ident));
+    auto ident    = ast::Identifier(std::move(m_curr_tok));
+    auto let_stmt = std::make_unique<ast::LetStmt>(let_tok, std::move(ident));
 
     if (!expect_peek(TokenType::Equal))
         return nullptr;
@@ -87,10 +87,11 @@ auto Parser::parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>
 
 auto Parser::parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt>
 {
-    auto expression_stmt = std::make_unique<ast::ExpressionStmt>(m_curr_tok);
+    auto expression_tok = m_curr_tok;
 
-    auto expression = parse_expression(PrecedenceLevel::Lowest);
-    expression_stmt->set_expression(std::move(expression));
+    auto expression      = parse_expression(PrecedenceLevel::Lowest);
+    auto expression_stmt = std::make_unique<ast::ExpressionStmt>(std::move(expression_tok),
+                                                                 std::move(expression));
 
     if (peek_type_is(TokenType::Semicolon))
         consume();
@@ -98,13 +99,13 @@ auto Parser::parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt
     return expression_stmt;
 }
 
-auto Parser::parse_expression(PrecedenceLevel prec_lv) -> std::unique_ptr<ast::ExprNode>
+auto Parser::parse_expression(PrecedenceLevel prec_lv) -> ExprNodePtr
 {
     auto prefix_fn = m_prefix_parse_fns[m_curr_tok.m_type];
 
     if (!prefix_fn)
     {
-        m_errors.emplace_back("No prefix found for token '"
+        m_errors.emplace_back("No prefix parse function found for token '"
                               + type_to_string(m_curr_tok.m_type)
                               + "'\n");
         return nullptr;
@@ -114,32 +115,32 @@ auto Parser::parse_expression(PrecedenceLevel prec_lv) -> std::unique_ptr<ast::E
     return left_exp;
 }
 
-auto Parser::parse_identifier() -> std::unique_ptr<ast::ExprNode>
+auto Parser::parse_identifier() -> ExprNodePtr
 {
     return std::make_unique<ast::Identifier>(std::move(m_curr_tok));
 }
 
-auto Parser::parse_int_literal() -> std::unique_ptr<ast::ExprNode>
+auto Parser::parse_int_literal() -> ExprNodePtr
 {
-    std::string_view token_val{};
+    std::string_view int_tok{};
     if (m_curr_tok.m_literal.has_value())
-        token_val = m_curr_tok.m_literal.value();
+        int_tok = m_curr_tok.m_literal.value();
 
     int int_val{};
     if (const auto [p, ec] =
-          std::from_chars(token_val.data(), token_val.data() + token_val.size(), int_val);
+          std::from_chars(int_tok.data(), int_tok.data() + int_tok.size(), int_val);
         ec == std::errc())
     {
         return std::make_unique<ast::IntLiteral>(std::move(m_curr_tok), int_val);
     }
 
     m_errors.emplace_back("Could not parse "
-                          + std::string{token_val}
+                          + std::string{int_tok}
                           + " as integer\n");
     return nullptr;
 }
 
-auto Parser::parse_prefix_expression() -> std::unique_ptr<ast::ExprNode>
+auto Parser::parse_prefix_expression() -> ExprNodePtr
 {
     auto prefix_tok = m_curr_tok;
     consume();
@@ -157,25 +158,6 @@ bool Parser::peek_type_is(const TokenType& type) const
     return m_peek_tok.m_type == type;
 }
 
-void Parser::peek_error(const TokenType& type)
-{
-    m_errors.emplace_back("Expected next token to be ["
-                          + type_to_string(type)
-                          + "], but got ["
-                          + type_to_string(m_peek_tok.m_type)
-                          + "] instead\n");
-}
-
-void Parser::register_prefix(TokenType type, PrefixParseFn parse_fn)
-{
-    m_prefix_parse_fns[type] = std::move(parse_fn);
-}
-
-void Parser::register_infix(TokenType type, InfixParseFn parse_fn)
-{
-    m_infix_parse_fns[type] = std::move(parse_fn);
-}
-
 bool Parser::expect_peek(const TokenType& type)
 {
     if (peek_type_is(type))
@@ -185,6 +167,25 @@ bool Parser::expect_peek(const TokenType& type)
     }
     peek_error(type);
     return false;
+}
+
+void Parser::peek_error(const TokenType& type)
+{
+    m_errors.emplace_back("Expected next token to be ["
+                          + type_to_string(type)
+                          + "], but got ["
+                          + type_to_string(m_peek_tok.m_type)
+                          + "] instead\n");
+}
+
+void Parser::register_prefix(TokenType type, PrefixParseFn pre_parse_fn)
+{
+    m_prefix_parse_fns[type] = std::move(pre_parse_fn);
+}
+
+void Parser::register_infix(TokenType type, InfixParseFn in_parse_fn)
+{
+    m_infix_parse_fns[type] = std::move(in_parse_fn);
 }
 
 }  // namespace parser
