@@ -78,4 +78,9 @@ void ExpressionStmt::set_expression(std::unique_ptr<ExprNode> expression)
     m_expression = std::move(expression);
 }
 
+std::string IntLiteral::to_string() const
+{
+    return std::to_string(m_int_value);
+}
+
 }  // namespace ast

@@ -164,6 +164,27 @@ private:
     std::unique_ptr<ExprNode> m_expression;
 };
 
+class IntLiteral : public ExprNode
+{
+public:
+    IntLiteral()                        = delete;
+    IntLiteral(IntLiteral const& other) = default;
+    IntLiteral& operator=(IntLiteral const& other) = default;
+    IntLiteral(IntLiteral&& other)                 = default;
+    IntLiteral& operator=(IntLiteral&& other) = default;
+    ~IntLiteral() override                    = default;
+
+    IntLiteral(Token tok, int int_value) :
+      ExprNode{std::move(tok)},
+      m_int_value(int_value)
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    int m_int_value;
+};
+
 }  // namespace ast
 
 #endif  // AST_HPP

@@ -1,5 +1,6 @@
 #include "../include/Parser.hpp"
 
+#include <charconv>
 #include <memory>
 #include <utility>
 
@@ -16,6 +17,7 @@ Parser::Parser(Lexer lex) :
     consume();
 
     register_prefix(TokenType::Identifier, [this] { return parse_identifier(); });
+    register_prefix(TokenType::Int, [this] { return parse_int_literal(); });
 }
 
 void Parser::consume()
@@ -108,6 +110,26 @@ auto Parser::parse_expression(PrecedenceLevel prec_lv) -> std::unique_ptr<ast::E
 auto Parser::parse_identifier() -> std::unique_ptr<ast::ExprNode>
 {
     return std::make_unique<ast::Identifier>(std::move(m_curr_tok));
+}
+
+auto Parser::parse_int_literal() -> std::unique_ptr<ast::ExprNode>
+{
+    std::string_view token_val{};
+    if (m_curr_tok.m_literal.has_value())
+        token_val = m_curr_tok.m_literal.value();
+
+    int int_val{};
+    if (const auto [p, ec] =
+          std::from_chars(token_val.data(), token_val.data() + token_val.size(), int_val);
+        ec == std::errc())
+    {
+        return std::make_unique<ast::IntLiteral>(std::move(m_curr_tok), int_val);
+    }
+
+    m_errors.emplace_back("Could not parse "
+                          + std::string{token_val}
+                          + " as integer\n");
+    return nullptr;
 }
 
 bool Parser::curr_type_is(const TokenType& type) const
