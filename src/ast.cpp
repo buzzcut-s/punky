@@ -83,4 +83,9 @@ std::string IntLiteral::to_string() const
     return std::to_string(m_int_value);
 }
 
+std::string PrefixExpression::to_string() const
+{
+    return "(" + token_literal() + " " + m_right->to_string() + ")";
+}
+
 }  // namespace ast

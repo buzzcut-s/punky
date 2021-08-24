@@ -18,6 +18,8 @@ Parser::Parser(Lexer lex) :
 
     register_prefix(TokenType::Identifier, [this] { return parse_identifier(); });
     register_prefix(TokenType::Int, [this] { return parse_int_literal(); });
+    register_prefix(TokenType::Bang, [this] { return parse_prefix_expression(); });
+    register_prefix(TokenType::Minus, [this] { return parse_prefix_expression(); });
 }
 
 void Parser::consume()
@@ -101,7 +103,12 @@ auto Parser::parse_expression(PrecedenceLevel prec_lv) -> std::unique_ptr<ast::E
     auto prefix_fn = m_prefix_parse_fns[m_curr_tok.m_type];
 
     if (!prefix_fn)
+    {
+        m_errors.emplace_back("No prefix found for token '"
+                              + type_to_string(m_curr_tok.m_type)
+                              + "'\n");
         return nullptr;
+    }
 
     auto left_exp = prefix_fn();
     return left_exp;
@@ -130,6 +137,14 @@ auto Parser::parse_int_literal() -> std::unique_ptr<ast::ExprNode>
                           + std::string{token_val}
                           + " as integer\n");
     return nullptr;
+}
+
+auto Parser::parse_prefix_expression() -> std::unique_ptr<ast::ExprNode>
+{
+    auto prefix_tok = m_curr_tok;
+    consume();
+    auto right_expr = parse_expression(PrecedenceLevel::Prefix);
+    return std::make_unique<ast::PrefixExpression>(prefix_tok, std::move(right_expr));
 }
 
 bool Parser::curr_type_is(const TokenType& type) const

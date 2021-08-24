@@ -185,6 +185,27 @@ private:
     int m_int_value;
 };
 
+class PrefixExpression : public ExprNode
+{
+public:
+    PrefixExpression()                              = delete;
+    PrefixExpression(PrefixExpression const& other) = delete;
+    PrefixExpression& operator=(PrefixExpression const& other) = delete;
+    PrefixExpression(PrefixExpression&& other)                 = default;
+    PrefixExpression& operator=(PrefixExpression&& other) = default;
+    ~PrefixExpression() override                          = default;
+
+    PrefixExpression(Token tok, std::unique_ptr<ExprNode> right) :
+      ExprNode{std::move(tok)},
+      m_right{std::move(right)}
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    std::unique_ptr<ExprNode> m_right;
+};
+
 }  // namespace ast
 
 #endif  // AST_HPP

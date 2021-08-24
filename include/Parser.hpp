@@ -67,6 +67,7 @@ private:
 
     auto parse_identifier() -> std::unique_ptr<ast::ExprNode>;
     auto parse_int_literal() -> std::unique_ptr<ast::ExprNode>;
+    auto parse_prefix_expression() -> std::unique_ptr<ast::ExprNode>;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;
