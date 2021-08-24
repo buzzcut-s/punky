@@ -40,6 +40,8 @@ auto Parser::parse_statement() -> std::unique_ptr<ast::StmtNode>
     {
         case TokenType::Let:
             return parse_let_statement();
+        case TokenType::Return:
+            return parse_return_statement();
         default:
             return nullptr;
     }
@@ -63,6 +65,18 @@ auto Parser::parse_let_statement() -> std::unique_ptr<ast::LetStmt>
         consume();
 
     return let_stmt;
+}
+
+auto Parser::parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>
+{
+    auto ret_stmt = std::make_unique<ast::ReturnStmt>(m_curr_tok);
+
+    consume();
+
+    while (!curr_type_is(TokenType::Semicolon) && !curr_type_is(TokenType::EOS))
+        consume();
+
+    return ret_stmt;
 }
 
 bool Parser::curr_type_is(const TokenType& type) const

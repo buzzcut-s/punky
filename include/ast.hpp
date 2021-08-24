@@ -122,6 +122,26 @@ private:
     std::unique_ptr<ExprNode> m_value;
 };
 
+class ReturnStmt : public StmtNode
+{
+public:
+    ReturnStmt()                        = default;
+    ReturnStmt(ReturnStmt const& other) = delete;
+    ReturnStmt& operator=(ReturnStmt const& other) = delete;
+    ReturnStmt(ReturnStmt&& other)                 = default;
+    ReturnStmt& operator=(ReturnStmt&& other) = default;
+    ~ReturnStmt() override                    = default;
+
+    explicit ReturnStmt(Token tok) :
+      StmtNode{std::move(tok)}
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    std::unique_ptr<ExprNode> m_value;
+};
+
 }  // namespace ast
 
 #endif  // AST_HPP

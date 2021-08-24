@@ -13,6 +13,7 @@ namespace ast
 class Program;
 class StmtNode;
 class LetStmt;
+class ReturnStmt;
 }  // namespace ast
 
 namespace parser
@@ -37,6 +38,7 @@ private:
 
     auto parse_statement() -> std::unique_ptr<ast::StmtNode>;
     auto parse_let_statement() -> std::unique_ptr<ast::LetStmt>;
+    auto parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;

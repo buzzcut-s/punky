@@ -58,4 +58,12 @@ std::string Identifier::to_string() const
     return token_literal();
 }
 
+std::string ReturnStmt::to_string() const
+{
+    std::string ret_str{token_literal() + " "};
+    if (m_value)
+        ret_str.append(m_value->to_string());
+    return ret_str;
+}
+
 }  // namespace ast
