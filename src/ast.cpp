@@ -61,8 +61,8 @@ std::string Identifier::to_string() const
 std::string ReturnStmt::to_string() const
 {
     std::string ret_str{token_literal() + " "};
-    if (m_value)
-        ret_str.append(m_value->to_string());
+    if (m_ret_value)
+        ret_str.append(m_ret_value->to_string());
     return ret_str;
 }
 
