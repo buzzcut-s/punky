@@ -204,6 +204,29 @@ private:
     std::unique_ptr<ExprNode> m_right;
 };
 
+class InfixExpression : public ExprNode
+{
+public:
+    InfixExpression()                             = delete;
+    InfixExpression(InfixExpression const& other) = delete;
+    InfixExpression& operator=(InfixExpression const& other) = delete;
+    InfixExpression(InfixExpression&& other)                 = default;
+    InfixExpression& operator=(InfixExpression&& other) = default;
+    ~InfixExpression() override                         = default;
+
+    InfixExpression(Token tok, std::unique_ptr<ExprNode> left, std::unique_ptr<ExprNode> right) :
+      ExprNode{std::move(tok)},
+      m_left{std::move(left)},
+      m_right{std::move(right)}
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    std::unique_ptr<ExprNode> m_left;
+    std::unique_ptr<ExprNode> m_right;
+};
+
 }  // namespace ast
 
 #endif  // AST_HPP

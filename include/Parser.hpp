@@ -59,16 +59,19 @@ private:
     std::unordered_map<TokenType, PrefixParseFn> m_prefix_parse_fns;
     std::unordered_map<TokenType, InfixParseFn>  m_infix_parse_fns;
 
+    std::unordered_map<TokenType, PrecedenceLevel> m_precedences;
+
     auto parse_statement() -> std::unique_ptr<ast::StmtNode>;
     auto parse_let_statement() -> std::unique_ptr<ast::LetStmt>;
     auto parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>;
     auto parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt>;
 
-    auto parse_expression(PrecedenceLevel prec_lv) -> ExprNodePtr;
+    auto parse_expression(PrecedenceLevel precedence) -> ExprNodePtr;
 
     auto parse_identifier() -> ExprNodePtr;
     auto parse_int_literal() -> ExprNodePtr;
     auto parse_prefix_expression() -> ExprNodePtr;
+    auto parse_infix_expression(ExprNodePtr left_expr) -> ExprNodePtr;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;
@@ -78,6 +81,9 @@ private:
 
     void register_prefix(TokenType type, PrefixParseFn pre_parse_fn);
     void register_infix(TokenType type, InfixParseFn in_parse_fn);
+
+    auto curr_precedence() const -> PrecedenceLevel;
+    auto peek_precedence() const -> PrecedenceLevel;
 };
 
 }  // namespace parser

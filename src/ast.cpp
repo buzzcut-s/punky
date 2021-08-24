@@ -80,4 +80,13 @@ std::string PrefixExpression::to_string() const
     return "";
 }
 
+std::string InfixExpression::to_string() const
+{
+    if (m_left && m_right)
+        return "(" + m_left->to_string()
+               + " " + token_literal() + " "
+               + m_right->to_string() + ")";
+    return "";
+}
+
 }  // namespace ast
