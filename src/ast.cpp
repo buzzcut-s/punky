@@ -73,4 +73,9 @@ std::string ExpressionStmt::to_string() const
     return "";
 }
 
+void ExpressionStmt::set_expression(std::unique_ptr<ExprNode> expression)
+{
+    m_expression = std::move(expression);
+}
+
 }  // namespace ast

@@ -158,6 +158,8 @@ public:
 
     [[nodiscard]] std::string to_string() const override;
 
+    void set_expression(std::unique_ptr<ExprNode> expression);
+
 private:
     std::unique_ptr<ExprNode> m_expression;
 };

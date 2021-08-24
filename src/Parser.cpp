@@ -14,6 +14,8 @@ Parser::Parser(Lexer lex) :
 {
     consume();
     consume();
+
+    register_prefix(TokenType::Identifier, [this] { return parse_identifier(); });
 }
 
 void Parser::consume()
@@ -43,7 +45,7 @@ auto Parser::parse_statement() -> std::unique_ptr<ast::StmtNode>
         case TokenType::Return:
             return parse_return_statement();
         default:
-            return nullptr;
+            return parse_expression_statement();
     }
 }
 
@@ -77,6 +79,35 @@ auto Parser::parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>
         consume();
 
     return ret_stmt;
+}
+
+auto Parser::parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt>
+{
+    auto expression_stmt = std::make_unique<ast::ExpressionStmt>(m_curr_tok);
+
+    auto expression = parse_expression(PrecedenceLevel::Lowest);
+    expression_stmt->set_expression(std::move(expression));
+
+    if (peek_type_is(TokenType::Semicolon))
+        consume();
+
+    return expression_stmt;
+}
+
+auto Parser::parse_expression(PrecedenceLevel prec_lv) -> std::unique_ptr<ast::ExprNode>
+{
+    auto prefix_fn = m_prefix_parse_fns[m_curr_tok.m_type];
+
+    if (!prefix_fn)
+        return nullptr;
+
+    auto left_exp = prefix_fn();
+    return left_exp;
+}
+
+auto Parser::parse_identifier() -> std::unique_ptr<ast::ExprNode>
+{
+    return std::make_unique<ast::Identifier>(std::move(m_curr_tok));
 }
 
 bool Parser::curr_type_is(const TokenType& type) const

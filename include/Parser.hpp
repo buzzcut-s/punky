@@ -22,6 +22,19 @@ class ReturnStmt;
 namespace parser
 {
 
+enum class PrecedenceLevel
+{
+    _,  // 0
+    Lowest,
+    Equals,       // ==
+    LessGreater,  // > or <
+    Sum,          // + or -
+    Product,      // * or /
+    Prefix,       // -x or !x
+    Call,         // myFunc(x)
+    Index,        // index
+};
+
 class Parser
 {
 public:
@@ -33,9 +46,9 @@ public:
     auto parse_program() -> std::unique_ptr<ast::Program>;
 
 private:
-    using ExprNode      = std::unique_ptr<ast::ExprNode>;
-    using PrefixParseFn = std::function<ExprNode()>;
-    using InfixParseFn  = std::function<ExprNode(ExprNode)>;
+    using ExprNodePtr   = std::unique_ptr<ast::ExprNode>;
+    using PrefixParseFn = std::function<ExprNodePtr()>;
+    using InfixParseFn  = std::function<ExprNodePtr(ExprNodePtr)>;
 
     Lexer m_lex;
     Token m_curr_tok{};
@@ -49,6 +62,10 @@ private:
     auto parse_statement() -> std::unique_ptr<ast::StmtNode>;
     auto parse_let_statement() -> std::unique_ptr<ast::LetStmt>;
     auto parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>;
+    auto parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt>;
+    auto parse_expression(PrecedenceLevel prec_lv) -> std::unique_ptr<ast::ExprNode>;
+
+    auto parse_identifier() -> std::unique_ptr<ast::ExprNode>;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;
