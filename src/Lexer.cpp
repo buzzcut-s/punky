@@ -139,7 +139,7 @@ std::string Lexer::read_number()
 
 auto Lexer::token_type(const std::string& tok) const -> TokenType
 {
-    if (const auto res = m_keywords.find(tok); res != m_keywords.end())
+    if (const auto res = m_keywords.find(tok); res != m_keywords.cend())
         return res->second;
     return TokenType::Identifier;
 }
