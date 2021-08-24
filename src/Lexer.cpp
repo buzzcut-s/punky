@@ -87,7 +87,7 @@ Token Lexer::next_token()
                                                      : make_token(type, std::nullopt);
             }
             else if (utils::is_digit(*m_read_iter))
-                return make_token(TokenType::Number, read_number());
+                return make_token(TokenType::Int, read_number());
             else
                 tok = make_token(TokenType::Illegal, std::nullopt);
             break;

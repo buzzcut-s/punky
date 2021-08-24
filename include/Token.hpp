@@ -23,7 +23,7 @@ enum class TokenType
 
     // Literals
     Identifier,
-    String, Number, Int,
+    String, Int,
 
     // Keywords
     Func, Let,

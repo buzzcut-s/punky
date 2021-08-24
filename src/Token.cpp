@@ -73,8 +73,6 @@ std::string type_to_string(const TokenType& type)
             return "IDENTIFIER";
         case TokenType::String:
             return "STRING";
-        case TokenType::Number:
-            return "NUMBER";
         case TokenType::Int:
             return "INT";
         case TokenType::Func:
@@ -98,7 +96,6 @@ std::string type_to_string(const TokenType& type)
         default:
             return "DEFAULT";
     }
-    return "Can't be reached";
 }
 
 std::string format_token(const Token& tok)
