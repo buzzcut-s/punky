@@ -77,6 +77,8 @@ public:
     [[nodiscard]] std::string token_literal() const override;
     [[nodiscard]] std::string to_string() const override;
 
+    void push_stmt(std::unique_ptr<ast::StmtNode> stmt);
+
 private:
     std::vector<std::unique_ptr<StmtNode>> m_statements;
 };
@@ -94,7 +96,7 @@ struct Identifier : public ExprNode
       ExprNode{std::move(tok)}
     {}
 
-    [[nodiscard]] std::string to_string() const override { return token_literal(); }
+    [[nodiscard]] std::string to_string() const override;
 };
 
 class LetStmt : public StmtNode
@@ -112,6 +114,8 @@ public:
     {}
 
     [[nodiscard]] std::string to_string() const override;
+
+    void set_ident(Identifier ident);
 
 private:
     Identifier                m_name;

@@ -29,19 +29,33 @@ std::string Program::token_literal() const
 std::string Program::to_string() const
 {
     std::string prog_str;
-    for (const auto& smt : m_statements)
-        prog_str.append(smt->to_string() + "\n");
+    for (const auto& stmt : m_statements)
+        prog_str.append(stmt->to_string() + "\n");
     return prog_str;
+}
+
+void Program::push_stmt(std::unique_ptr<ast::StmtNode> stmt)
+{
+    m_statements.push_back(std::move(stmt));
 }
 
 std::string LetStmt::to_string() const
 {
-    std::string let_str{token_literal()};
+    std::string let_str{token_literal() + " "};
     let_str.append(m_name.to_string());
     if (m_value)
         let_str.append(m_value->to_string());
-    let_str.append(";\n");
     return let_str;
+}
+
+void LetStmt::set_ident(Identifier ident)
+{
+    m_name = std::move(ident);
+}
+
+std::string Identifier::to_string() const
+{
+    return token_literal();
 }
 
 }  // namespace ast
