@@ -43,9 +43,9 @@ struct Token
     std::optional<std::string> m_literal;
 };
 
-Token make_token(TokenType type, std::optional<std::string> literal);
+auto make_token(TokenType type, std::optional<std::string> literal) -> Token;
 
-std::unordered_map<std::string, TokenType> make_keywords();
+auto make_keywords() -> std::unordered_map<std::string, TokenType>;
 
 std::string token_to_string(const Token& tok);
 

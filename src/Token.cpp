@@ -4,12 +4,12 @@
 #include <string>
 #include <unordered_map>
 
-Token make_token(TokenType type, std::optional<std::string> literal)
+auto make_token(TokenType type, std::optional<std::string> literal) -> Token
 {
     return Token{type, std::move(literal)};
 }
 
-std::unordered_map<std::string, TokenType> make_keywords()
+auto make_keywords() -> std::unordered_map<std::string, TokenType>
 {
     return std::unordered_map<std::string, TokenType>{
       {"fn", TokenType::Func},
