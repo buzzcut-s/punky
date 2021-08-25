@@ -27,6 +27,7 @@ Parser::Parser(Lexer lex) :
     register_prefix(TokenType::True, [this] { return parse_boolean(); });
     register_prefix(TokenType::False, [this] { return parse_boolean(); });
     register_prefix(TokenType::LeftParen, [this] { return parse_grouped_expression(); });
+    register_prefix(TokenType::If, [this] { return parse_if_expression(); });
 
     register_infix(TokenType::Plus, [this](ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
@@ -131,6 +132,21 @@ auto Parser::parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt
     return expression_stmt;
 }
 
+auto Parser::parse_block_statement() -> std::unique_ptr<ast::BlockStmt>
+{
+    auto blk_tok = m_curr_tok;
+    auto blk     = std::make_unique<ast::BlockStmt>(blk_tok);
+    consume();
+    while (!curr_type_is(TokenType::RightBrace) && !curr_type_is(TokenType::EOS))
+    {
+        auto stmt = parse_statement();
+        if (stmt)
+            blk->push_stmt(std::move(stmt));
+        consume();
+    }
+    return blk;
+}
+
 auto Parser::parse_expression(PrecedenceLevel precedence) -> ExprNodePtr
 {
     auto prefix_fn = m_prefix_parse_fns[m_curr_tok.m_type];
@@ -218,6 +234,35 @@ auto Parser::parse_grouped_expression() -> ExprNodePtr
     if (!expect_peek(TokenType::RightParen))
         return nullptr;
     return expression;
+}
+
+auto Parser::parse_if_expression() -> ExprNodePtr
+{
+    auto if_tok = m_curr_tok;
+    if (!expect_peek(TokenType::LeftParen))
+        return nullptr;
+
+    consume();
+    auto condition = parse_expression(PrecedenceLevel::Lowest);
+
+    if (!expect_peek(TokenType::RightParen))
+        return nullptr;
+    if (!expect_peek(TokenType::LeftBrace))
+        return nullptr;
+
+    auto consequence = parse_block_statement();
+
+    std::unique_ptr<ast::BlockStmt> alternative{};
+    if (peek_type_is(TokenType::Else))
+    {
+        consume();
+        if (!expect_peek(TokenType::LeftBrace))
+            return nullptr;
+        alternative = parse_block_statement();
+    }
+
+    return std::make_unique<ast::IfExpression>(if_tok, std::move(condition),
+                                               std::move(consequence), std::move(alternative));
 }
 
 bool Parser::curr_type_is(const TokenType& type) const

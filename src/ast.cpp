@@ -68,6 +68,11 @@ std::string ExpressionStmt::to_string() const
     return "";
 }
 
+void BlockStmt::push_stmt(std::unique_ptr<ast::StmtNode> stmt)
+{
+    m_blk_statements.push_back(std::move(stmt));
+}
+
 std::string BlockStmt::to_string() const
 {
     std::string blk_str;
@@ -100,6 +105,19 @@ std::string InfixExpression::to_string() const
 std::string Boolean::to_string() const
 {
     return token_literal();
+}
+
+std::string IfExpression::to_string() const
+{
+    std::string if_str;
+    if (m_condition && m_consequence)
+    {
+        if_str.append(token_literal() + " " + m_condition->to_string()
+                      + " " + m_consequence->to_string());
+        if (m_alternative)
+            if_str.append("else " + m_alternative->to_string());
+    }
+    return if_str;
 }
 
 }  // namespace ast

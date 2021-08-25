@@ -65,6 +65,7 @@ private:
     auto parse_let_statement() -> std::unique_ptr<ast::LetStmt>;
     auto parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>;
     auto parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt>;
+    auto parse_block_statement() -> std::unique_ptr<ast::BlockStmt>;
 
     auto parse_expression(PrecedenceLevel precedence) -> ExprNodePtr;
 
@@ -74,6 +75,7 @@ private:
     auto parse_infix_expression(ExprNodePtr left_expr) -> ExprNodePtr;
     auto parse_boolean() -> ExprNodePtr;
     auto parse_grouped_expression() -> ExprNodePtr;
+    auto parse_if_expression() -> ExprNodePtr;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;

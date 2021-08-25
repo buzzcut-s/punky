@@ -84,9 +84,9 @@ std::string type_to_string(const TokenType& type)
         case TokenType::False:
             return "false";
         case TokenType::If:
-            return "IF";
+            return "if";
         case TokenType::Else:
-            return "ELSE";
+            return "ELSE - UNREACHABLE";
         case TokenType::Return:
             return "RETURN";
         case TokenType::Illegal:

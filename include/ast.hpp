@@ -172,10 +172,11 @@ public:
     BlockStmt& operator=(BlockStmt&& other) = default;
     ~BlockStmt() override                   = default;
 
-    explicit BlockStmt(Token tok, std::vector<std::unique_ptr<StmtNode>> blk_statements) :
-      StmtNode{std::move(tok)},
-      m_blk_statements{std::move(blk_statements)}
+    explicit BlockStmt(Token tok) :
+      StmtNode{std::move(tok)}
     {}
+
+    void push_stmt(std::unique_ptr<ast::StmtNode> stmt);
 
     [[nodiscard]] std::string to_string() const override;
 
@@ -267,6 +268,33 @@ public:
 
 private:
     bool m_bool_value;
+};
+
+class IfExpression : public ExprNode
+{
+public:
+    IfExpression()                          = delete;
+    IfExpression(IfExpression const& other) = delete;
+    IfExpression& operator=(IfExpression const& other) = delete;
+    IfExpression(IfExpression&& other)                 = default;
+    IfExpression& operator=(IfExpression&& other) = default;
+    ~IfExpression() override                      = default;
+
+    IfExpression(Token tok, std::unique_ptr<ExprNode> condition,
+                 std::unique_ptr<BlockStmt> consequence,
+                 std::unique_ptr<BlockStmt> alternative) :
+      ExprNode{std::move(tok)},
+      m_condition{std::move(condition)},
+      m_consequence{std::move(consequence)},
+      m_alternative{std::move(alternative)}
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    std::unique_ptr<ExprNode>  m_condition;
+    std::unique_ptr<BlockStmt> m_consequence;
+    std::unique_ptr<BlockStmt> m_alternative;
 };
 
 }  // namespace ast
