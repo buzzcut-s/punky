@@ -198,7 +198,7 @@ auto Parser::parse_int_literal() -> ExprNodePtr
         return std::make_unique<ast::IntLiteral>(std::move(m_curr_tok), int_val);
     }
 
-    m_errors.emplace_back("Could not parse "  // This state should be unreachable, in theory
+    m_errors.emplace_back("Could not parse "
                           + std::string{buff}
                           + " as integer");
     return nullptr;
