@@ -11,20 +11,11 @@
 namespace parser
 {
 
+static auto make_precedence_map() -> std::unordered_map<TokenType, PrecedenceLevel>;
+
 Parser::Parser(Lexer lex) :
   m_lex{std::move(lex)},
-  m_precedences{{
-    {TokenType::EqualEqual, PrecedenceLevel::Equals},
-    {TokenType::BangEqual, PrecedenceLevel::Equals},
-    {TokenType::Less, PrecedenceLevel::LessGreater},
-    {TokenType::Greater, PrecedenceLevel::LessGreater},
-    {TokenType::Plus, PrecedenceLevel::Sum},
-    {TokenType::Minus, PrecedenceLevel::Sum},
-    {TokenType::Asterisk, PrecedenceLevel::Product},
-    {TokenType::Slash, PrecedenceLevel::Product},
-    {TokenType::LeftParen, PrecedenceLevel::Call},
-    {TokenType::LeftBracket, PrecedenceLevel::Index},
-  }}
+  m_precedences{make_precedence_map()}
 {
     consume();
     consume();
@@ -264,6 +255,22 @@ auto Parser::peek_precedence() const -> PrecedenceLevel
         peek_prec != m_precedences.cend())
         return peek_prec->second;
     return PrecedenceLevel::Lowest;
+}
+
+static auto make_precedence_map() -> std::unordered_map<TokenType, PrecedenceLevel>
+{
+    return std::unordered_map<TokenType, PrecedenceLevel>{
+      {TokenType::EqualEqual, PrecedenceLevel::Equals},
+      {TokenType::BangEqual, PrecedenceLevel::Equals},
+      {TokenType::Less, PrecedenceLevel::LessGreater},
+      {TokenType::Greater, PrecedenceLevel::LessGreater},
+      {TokenType::Plus, PrecedenceLevel::Sum},
+      {TokenType::Minus, PrecedenceLevel::Sum},
+      {TokenType::Asterisk, PrecedenceLevel::Product},
+      {TokenType::Slash, PrecedenceLevel::Product},
+      {TokenType::LeftParen, PrecedenceLevel::Call},
+      {TokenType::LeftBracket, PrecedenceLevel::Index},
+    };
 }
 
 }  // namespace parser
