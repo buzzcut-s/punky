@@ -5,6 +5,9 @@
 #include <string>
 #include <unordered_map>
 
+namespace punky::tok
+{
+
 // clang-format off
 enum class TokenType
 {
@@ -48,5 +51,7 @@ auto make_token(TokenType type, std::optional<std::string> literal) -> Token;
 auto make_keywords() -> std::unordered_map<std::string, TokenType>;
 
 std::string type_to_string(const TokenType& type);
+
+}  // namespace punky::tok
 
 #endif  // TOKEN_HPP

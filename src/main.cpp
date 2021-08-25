@@ -10,8 +10,8 @@ int main()
     std::string line;
     while (readline::read(line))
     {
-        auto lex = Lexer{std::move(line)};
-        auto par = parser::Parser{lex};
+        auto lex = punky::lex::Lexer{std::move(line)};
+        auto par = punky::par::Parser{lex};
 
         auto prog = par.parse_program();
 

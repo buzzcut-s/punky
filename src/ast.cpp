@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace ast
+namespace punky::ast
 {
 
 std::string ExprNode::token_literal() const
@@ -160,4 +160,4 @@ std::string FunctionLiteral::to_string() const
     return fn_str;
 }
 
-}  // namespace ast
+}  // namespace punky::ast

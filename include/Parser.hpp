@@ -11,16 +11,10 @@
 #include "Token.hpp"
 #include "ast.hpp"
 
-namespace ast
+namespace punky::par
 {
-class Program;
-class StmtNode;
-class LetStmt;
-class ReturnStmt;
-}  // namespace ast
-
-namespace parser
-{
+using tok::Token;
+using tok::TokenType;
 
 enum class PrecedenceLevel
 {
@@ -38,7 +32,7 @@ enum class PrecedenceLevel
 class Parser
 {
 public:
-    explicit Parser(Lexer lex);
+    explicit Parser(lex::Lexer lex);
 
     void consume();
     auto errors() const { return m_errors; }
@@ -46,14 +40,14 @@ public:
     auto parse_program() -> std::unique_ptr<ast::Program>;
 
 private:
-    using ExprNodePtr   = std::unique_ptr<ast::ExprNode>;
-    using ExprNodeList  = std::vector<ExprNodePtr>;
-    using PrefixParseFn = std::function<ExprNodePtr()>;
-    using InfixParseFn  = std::function<ExprNodePtr(ExprNodePtr)>;
+    using ExprNodePtr    = std::unique_ptr<ast::ExprNode>;
+    using ExprNodeVector = std::vector<ExprNodePtr>;
+    using PrefixParseFn  = std::function<ExprNodePtr()>;
+    using InfixParseFn   = std::function<ExprNodePtr(ExprNodePtr)>;
 
-    Lexer m_lex;
-    Token m_curr_tok{};
-    Token m_peek_tok{};
+    punky::lex::Lexer m_lex;
+    punky::tok::Token m_curr_tok{};
+    punky::tok::Token m_peek_tok{};
 
     std::vector<std::string> m_errors{};
 
@@ -82,7 +76,7 @@ private:
     auto parse_function_params() -> std::unique_ptr<std::vector<ast::Identifier>>;
 
     auto parse_call_expression(ExprNodePtr function) -> ExprNodePtr;
-    auto parse_call_arguments() -> std::unique_ptr<ExprNodeList>;
+    auto parse_call_arguments() -> std::unique_ptr<ExprNodeVector>;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;
@@ -96,7 +90,6 @@ private:
     auto curr_precedence() const -> PrecedenceLevel;
     auto peek_precedence() const -> PrecedenceLevel;
 };
-
-}  // namespace parser
+}  // namespace punky::par
 
 #endif  // PARSER_HPP

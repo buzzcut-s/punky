@@ -5,8 +5,12 @@
 #include <string>
 #include <unordered_map>
 
-class Token;
-enum class TokenType;
+#include "Token.hpp"
+
+namespace punky::lex
+{
+using tok::Token;
+using tok::TokenType;
 
 class Lexer
 {
@@ -32,5 +36,6 @@ private:
 
     auto token_type(const std::string& tok) const -> TokenType;
 };
+}  // namespace punky::lex
 
 #endif  // LEXER_HPP

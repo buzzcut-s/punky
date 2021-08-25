@@ -3,6 +3,9 @@
 #include <string>
 #include <unordered_map>
 
+namespace punky::tok
+{
+
 auto make_token(TokenType type, std::optional<std::string> literal) -> Token
 {
     return Token{type, std::move(literal)};
@@ -107,3 +110,5 @@ std::string type_to_string(const TokenType& type)
     tok_str.append("}");
     return tok_str;
 }
+
+}  // namespace punky::tok

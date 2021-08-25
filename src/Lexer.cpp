@@ -7,11 +7,13 @@
 #include "../include/Token.hpp"
 #include "../include/utils.hpp"
 
+namespace punky::lex
+{
 Lexer::Lexer(std::string line) :
   m_line{std::move(line)},
   m_it{m_line.cbegin()},
   m_ch{*m_it},
-  m_keywords{make_keywords()}
+  m_keywords{tok::make_keywords()}
 {
 }
 
@@ -143,3 +145,5 @@ auto Lexer::token_type(const std::string& tok) const -> TokenType
         return res->second;
     return TokenType::Identifier;
 }
+
+}  // namespace punky::lex

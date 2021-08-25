@@ -8,8 +8,9 @@
 
 #include "Token.hpp"
 
-namespace ast
+namespace punky::ast
 {
+using tok::Token;
 
 struct AstNode
 {
@@ -44,6 +45,9 @@ private:
     Token m_token;
 };
 
+using ExprNodePtr    = std::unique_ptr<ast::ExprNode>;
+using ExprNodeVector = std::vector<ExprNodePtr>;
+
 class StmtNode : public AstNode
 {
 public:
@@ -64,6 +68,9 @@ private:
     Token m_token;
 };
 
+using StmtNodePtr    = std::unique_ptr<ast::StmtNode>;
+using StmtNodeVector = std::vector<StmtNodePtr>;
+
 class Program : public AstNode
 {
 public:
@@ -80,7 +87,7 @@ public:
     void push_stmt(std::unique_ptr<ast::StmtNode> stmt);
 
 private:
-    std::vector<std::unique_ptr<StmtNode>> m_statements;
+    StmtNodeVector m_statements;
 };
 
 struct Identifier : public ExprNode
@@ -109,7 +116,7 @@ public:
     LetStmt& operator=(LetStmt&& other) = default;
     ~LetStmt() override                 = default;
 
-    explicit LetStmt(Token tok, Identifier name, std::unique_ptr<ExprNode> value) :
+    explicit LetStmt(Token tok, Identifier name, ExprNodePtr value) :
       StmtNode{std::move(tok)},
       m_name(std::move(name)),
       m_value{std::move(value)}
@@ -118,8 +125,8 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    Identifier                m_name;
-    std::unique_ptr<ExprNode> m_value;
+    Identifier  m_name;
+    ExprNodePtr m_value;
 };
 
 class ReturnStmt : public StmtNode
@@ -132,7 +139,7 @@ public:
     ReturnStmt& operator=(ReturnStmt&& other) = default;
     ~ReturnStmt() override                    = default;
 
-    explicit ReturnStmt(Token tok, std::unique_ptr<ExprNode> ret_value) :
+    explicit ReturnStmt(Token tok, ExprNodePtr ret_value) :
       StmtNode{std::move(tok)},
       m_ret_value{std::move(ret_value)}
     {}
@@ -140,7 +147,7 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    std::unique_ptr<ExprNode> m_ret_value;
+    ExprNodePtr m_ret_value;
 };
 
 class ExpressionStmt : public StmtNode
@@ -153,7 +160,7 @@ public:
     ExpressionStmt& operator=(ExpressionStmt&& other) = default;
     ~ExpressionStmt() override                        = default;
 
-    explicit ExpressionStmt(Token tok, std::unique_ptr<ExprNode> expression) :
+    explicit ExpressionStmt(Token tok, ExprNodePtr expression) :
       StmtNode{std::move(tok)},
       m_expression{std::move(expression)}
     {}
@@ -161,7 +168,7 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    std::unique_ptr<ExprNode> m_expression;
+    ExprNodePtr m_expression;
 };
 
 class BlockStmt : public StmtNode
@@ -183,7 +190,7 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    std::vector<std::unique_ptr<StmtNode>> m_blk_statements;
+    StmtNodeVector m_blk_statements;
 };
 
 class IntLiteral : public ExprNode
@@ -217,7 +224,7 @@ public:
     PrefixExpression& operator=(PrefixExpression&& other) = default;
     ~PrefixExpression() override                          = default;
 
-    PrefixExpression(Token tok, std::unique_ptr<ExprNode> right) :
+    PrefixExpression(Token tok, ExprNodePtr right) :
       ExprNode{std::move(tok)},
       m_right{std::move(right)}
     {}
@@ -225,7 +232,7 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    std::unique_ptr<ExprNode> m_right;
+    ExprNodePtr m_right;
 };
 
 class InfixExpression : public ExprNode
@@ -238,7 +245,7 @@ public:
     InfixExpression& operator=(InfixExpression&& other) = default;
     ~InfixExpression() override                         = default;
 
-    InfixExpression(Token tok, std::unique_ptr<ExprNode> left, std::unique_ptr<ExprNode> right) :
+    InfixExpression(Token tok, ExprNodePtr left, ExprNodePtr right) :
       ExprNode{std::move(tok)},
       m_left{std::move(left)},
       m_right{std::move(right)}
@@ -247,8 +254,8 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    std::unique_ptr<ExprNode> m_left;
-    std::unique_ptr<ExprNode> m_right;
+    ExprNodePtr m_left;
+    ExprNodePtr m_right;
 };
 
 class Boolean : public ExprNode
@@ -282,9 +289,9 @@ public:
     IfExpression& operator=(IfExpression&& other) = default;
     ~IfExpression() override                      = default;
 
-    IfExpression(Token tok, std::unique_ptr<ExprNode> condition,
-                 std::unique_ptr<BlockStmt> consequence,
-                 std::unique_ptr<BlockStmt> alternative) :
+    IfExpression(Token tok, ExprNodePtr condition,
+                 StmtNodePtr consequence,
+                 StmtNodePtr alternative) :
       ExprNode{std::move(tok)},
       m_condition{std::move(condition)},
       m_consequence{std::move(consequence)},
@@ -294,17 +301,14 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    std::unique_ptr<ExprNode>  m_condition;
-    std::unique_ptr<BlockStmt> m_consequence;
-    std::unique_ptr<BlockStmt> m_alternative;
+    ExprNodePtr m_condition;
+    StmtNodePtr m_consequence;
+    StmtNodePtr m_alternative;
 };
 
 class CallExpression : public ExprNode
 {
 public:
-    using ExprNodePtr  = std::unique_ptr<ast::ExprNode>;
-    using ExprNodeList = std::vector<ExprNodePtr>;
-
     CallExpression()                            = delete;
     CallExpression(CallExpression const& other) = delete;
     CallExpression& operator=(CallExpression const& other) = delete;
@@ -313,7 +317,7 @@ public:
     ~CallExpression() override                        = default;
 
     CallExpression(Token tok, ExprNodePtr function,
-                   std::unique_ptr<ExprNodeList> arguments) :
+                   std::unique_ptr<ExprNodeVector> arguments) :
       ExprNode{std::move(tok)},
       m_function{std::move(function)},
       m_arguments{std::move(arguments)}
@@ -322,8 +326,8 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    ExprNodePtr                   m_function;
-    std::unique_ptr<ExprNodeList> m_arguments;
+    ExprNodePtr                     m_function;
+    std::unique_ptr<ExprNodeVector> m_arguments;
 };
 
 class FunctionLiteral : public ExprNode
@@ -337,7 +341,7 @@ public:
     ~FunctionLiteral() override                         = default;
 
     FunctionLiteral(Token tok, std::unique_ptr<std::vector<ast::Identifier>> params,
-                    std::unique_ptr<BlockStmt> body) :
+                    StmtNodePtr body) :
       ExprNode{std::move(tok)},
       m_params{std::move(params)},
       m_body{std::move(body)}
@@ -347,9 +351,9 @@ public:
 
 private:
     std::unique_ptr<std::vector<ast::Identifier>> m_params;
-    std::unique_ptr<BlockStmt>                    m_body;
+    StmtNodePtr                                   m_body;
 };
 
-}  // namespace ast
+}  // namespace punky::ast
 
 #endif  // AST_HPP

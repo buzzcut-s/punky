@@ -8,12 +8,12 @@
 #include "../include/Lexer.hpp"
 #include "../include/ast.hpp"
 
-namespace parser
+namespace punky::par
 {
 
 static auto make_precedence_map() -> std::unordered_map<TokenType, PrecedenceLevel>;
 
-Parser::Parser(Lexer lex) :
+Parser::Parser(punky::lex::Lexer lex) :
   m_lex{std::move(lex)},
   m_precedences{make_precedence_map()}
 {
@@ -315,18 +315,18 @@ auto Parser::parse_call_expression(ExprNodePtr function) -> ExprNodePtr
                                                  std::move(function), std::move(arguments));
 }
 
-auto Parser::parse_call_arguments() -> std::unique_ptr<ExprNodeList>
+auto Parser::parse_call_arguments() -> std::unique_ptr<ExprNodeVector>
 {
     if (peek_type_is(TokenType::RightParen))
     {
         consume();
-        return std::make_unique<ExprNodeList>();
+        return std::make_unique<ExprNodeVector>();
     }
     consume();
 
     auto args_expr = parse_expression(PrecedenceLevel::Lowest);
 
-    ExprNodeList args{};
+    ExprNodeVector args{};
     args.push_back(std::move(args_expr));
     while (peek_type_is(TokenType::Comma))
     {
@@ -339,7 +339,7 @@ auto Parser::parse_call_arguments() -> std::unique_ptr<ExprNodeList>
     if (!expect_peek(TokenType::RightParen))
         return nullptr;
 
-    return std::make_unique<ExprNodeList>(std::move(args));
+    return std::make_unique<ExprNodeVector>(std::move(args));
 }
 
 bool Parser::curr_type_is(const TokenType& type) const
@@ -414,4 +414,4 @@ static auto make_precedence_map() -> std::unordered_map<TokenType, PrecedenceLev
     };
 }
 
-}  // namespace parser
+}  // namespace punky::par
