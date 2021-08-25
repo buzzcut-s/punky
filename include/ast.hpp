@@ -297,6 +297,30 @@ private:
     std::unique_ptr<BlockStmt> m_alternative;
 };
 
+class CallExpression : public ExprNode
+{
+public:
+    CallExpression()                            = delete;
+    CallExpression(CallExpression const& other) = delete;
+    CallExpression& operator=(CallExpression const& other) = delete;
+    CallExpression(CallExpression&& other)                 = default;
+    CallExpression& operator=(CallExpression&& other) = default;
+    ~CallExpression() override                        = default;
+
+    CallExpression(Token tok, std::unique_ptr<ExprNode> function,
+                   std::vector<std::unique_ptr<ExprNode>> arguments) :
+      ExprNode{std::move(tok)},
+      m_function{std::move(function)},
+      m_arguments{std::move(arguments)}
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    std::unique_ptr<ExprNode>              m_function;
+    std::vector<std::unique_ptr<ExprNode>> m_arguments;
+};
+
 class FunctionLiteral : public ExprNode
 {
 public:

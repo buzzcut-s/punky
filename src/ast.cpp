@@ -122,6 +122,25 @@ std::string IfExpression::to_string() const
     return if_str;
 }
 
+std::string CallExpression::to_string() const
+{
+    std::string call_str;
+    if (m_function)
+    {
+        call_str.append(m_function->to_string() + token_literal());
+        std::string args_str;
+        for (const auto& args : m_arguments)
+            args_str.append(args->to_string() + ", ");
+        if (args_str.size() > 2)
+        {
+            args_str.pop_back();
+            args_str.pop_back();
+        }
+        call_str.append(args_str + ")");
+    }
+    return call_str;
+}
+
 std::string FunctionLiteral::to_string() const
 {
     std::string fn_str;
