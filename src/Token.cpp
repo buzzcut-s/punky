@@ -76,7 +76,7 @@ std::string type_to_string(const TokenType& type)
         case TokenType::Int:
             return "INT - UNREACHABLE";
         case TokenType::Func:
-            return "FUNC";
+            return "fn";
         case TokenType::Let:
             return "LET";
         case TokenType::True:

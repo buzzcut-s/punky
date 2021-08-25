@@ -76,6 +76,9 @@ private:
     auto parse_boolean() -> ExprNodePtr;
     auto parse_grouped_expression() -> ExprNodePtr;
     auto parse_if_expression() -> ExprNodePtr;
+    auto parse_function_literal() -> ExprNodePtr;
+
+    auto parse_function_params() -> std::unique_ptr<std::vector<ast::Identifier>>;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;

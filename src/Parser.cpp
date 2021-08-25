@@ -28,6 +28,7 @@ Parser::Parser(Lexer lex) :
     register_prefix(TokenType::False, [this] { return parse_boolean(); });
     register_prefix(TokenType::LeftParen, [this] { return parse_grouped_expression(); });
     register_prefix(TokenType::If, [this] { return parse_if_expression(); });
+    register_prefix(TokenType::Func, [this] { return parse_function_literal(); });
 
     register_infix(TokenType::Plus, [this](ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
@@ -263,6 +264,48 @@ auto Parser::parse_if_expression() -> ExprNodePtr
 
     return std::make_unique<ast::IfExpression>(if_tok, std::move(condition),
                                                std::move(consequence), std::move(alternative));
+}
+
+auto Parser::parse_function_literal() -> ExprNodePtr
+{
+    auto fn_tok = m_curr_tok;
+    if (!expect_peek(TokenType::LeftParen))
+        return nullptr;
+
+    auto params = parse_function_params();
+
+    if (!expect_peek(TokenType::LeftBrace))
+        return nullptr;
+
+    auto body = parse_block_statement();
+
+    return std::make_unique<ast::FunctionLiteral>(fn_tok, std::move(params), std::move(body));
+}
+
+auto Parser::parse_function_params() -> std::unique_ptr<std::vector<ast::Identifier>>
+{
+    if (peek_type_is(TokenType::RightParen))
+    {
+        consume();
+        return std::make_unique<std::vector<ast::Identifier>>();
+    }
+
+    consume();
+    auto ident = ast::Identifier(std::move(m_curr_tok));
+
+    std::vector<ast::Identifier> params{std::move(ident)};
+    while (peek_type_is(TokenType::Comma))
+    {
+        consume();
+        consume();
+        ident = ast::Identifier(std::move(m_curr_tok));
+        params.push_back(std::move(ident));
+    }
+
+    if (!expect_peek(TokenType::RightParen))
+        return nullptr;
+
+    return std::make_unique<std::vector<ast::Identifier>>(std::move(params));
 }
 
 bool Parser::curr_type_is(const TokenType& type) const

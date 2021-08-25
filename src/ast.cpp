@@ -75,9 +75,11 @@ void BlockStmt::push_stmt(std::unique_ptr<ast::StmtNode> stmt)
 
 std::string BlockStmt::to_string() const
 {
-    std::string blk_str;
+    std::string blk_str{"{ "};
     for (const auto& stmt : m_blk_statements)
         blk_str.append(stmt->to_string() + "\n");
+    blk_str.pop_back();
+    blk_str.append(" }");
     return blk_str;
 }
 
@@ -126,11 +128,15 @@ std::string FunctionLiteral::to_string() const
     if (m_params && m_body)
     {
         fn_str.append(token_literal() + "(");
+        std::string param_str;
         for (const auto& param : *m_params)
-            fn_str.append(param.to_string() + ", ");
-        fn_str.pop_back();
-        fn_str.pop_back();
-        fn_str.append(") " + m_body->to_string());
+            param_str.append(param.to_string() + ", ");
+        if (param_str.size() > 2)
+        {
+            param_str.pop_back();
+            param_str.pop_back();
+        }
+        fn_str.append(param_str + ") " + m_body->to_string());
     }
     return fn_str;
 }
