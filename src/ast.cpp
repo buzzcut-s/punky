@@ -44,7 +44,7 @@ std::string LetStmt::to_string() const
     std::string let_str{token_literal() + " "};
     let_str.append(m_name.to_string());
     if (m_value)
-        let_str.append(m_value->to_string());
+        let_str.append(" = " + m_value->to_string());
     return let_str;
 }
 

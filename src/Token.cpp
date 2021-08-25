@@ -28,7 +28,7 @@ std::string type_to_string(const TokenType& type)
         case TokenType::LeftParen:
             return "(";
         case TokenType::RightParen:
-            return "RIGHT_PAREN - UNREACHABLE";
+            return "RIGHT_PAREN";
         case TokenType::LeftBracket:
             return "LEFT_BRACKET";
         case TokenType::RightBracket:
@@ -70,15 +70,15 @@ std::string type_to_string(const TokenType& type)
         case TokenType::LessEqual:
             return "<=";
         case TokenType::Identifier:
-            return "IDENTIFIER - UNREACHABLE";
+            return "IDENTIFIER";
         case TokenType::String:
             return "STRING";
         case TokenType::Int:
-            return "INT - UNREACHABLE";
+            return "INT";
         case TokenType::Func:
             return "fn";
         case TokenType::Let:
-            return "LET";
+            return "let";
         case TokenType::True:
             return "true";
         case TokenType::False:
@@ -86,19 +86,19 @@ std::string type_to_string(const TokenType& type)
         case TokenType::If:
             return "if";
         case TokenType::Else:
-            return "ELSE - UNREACHABLE";
+            return "ELSE";
         case TokenType::Return:
-            return "RETURN";
+            return "return";
         case TokenType::Illegal:
-            return "ILLEGAL - UNREACHABLE";
+            return "ILLEGAL";
         case TokenType::EOS:
-            return "EOS - UNREACHABLE";
+            return "EOS";
         default:
             return "DEFAULT - UNREACHABLE";
     }
 }
 
-std::string format_token(const Token& tok)
+[[maybe_unused]] static std::string format_token(const Token& tok)
 {
     std::string tok_str{"{"};
     tok_str.append(" type: " + type_to_string(tok.m_type) + ",");

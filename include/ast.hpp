@@ -109,9 +109,10 @@ public:
     LetStmt& operator=(LetStmt&& other) = default;
     ~LetStmt() override                 = default;
 
-    explicit LetStmt(Token tok, Identifier name) :
+    explicit LetStmt(Token tok, Identifier name, std::unique_ptr<ExprNode> value) :
       StmtNode{std::move(tok)},
-      m_name(std::move(name))
+      m_name(std::move(name)),
+      m_value{std::move(value)}
     {}
 
     [[nodiscard]] std::string to_string() const override;
@@ -131,8 +132,9 @@ public:
     ReturnStmt& operator=(ReturnStmt&& other) = default;
     ~ReturnStmt() override                    = default;
 
-    explicit ReturnStmt(Token tok) :
-      StmtNode{std::move(tok)}
+    explicit ReturnStmt(Token tok, std::unique_ptr<ExprNode> ret_value) :
+      StmtNode{std::move(tok)},
+      m_ret_value{std::move(ret_value)}
     {}
 
     [[nodiscard]] std::string to_string() const override;

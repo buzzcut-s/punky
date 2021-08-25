@@ -97,29 +97,31 @@ auto Parser::parse_let_statement() -> std::unique_ptr<ast::LetStmt>
     if (!expect_peek(TokenType::Identifier))
         return nullptr;
 
-    auto ident    = ast::Identifier(std::move(m_curr_tok));
-    auto let_stmt = std::make_unique<ast::LetStmt>(let_tok, std::move(ident));
+    auto ident = ast::Identifier(std::move(m_curr_tok));
 
     if (!expect_peek(TokenType::Equal))
         return nullptr;
     consume();
 
+    auto value = parse_expression(PrecedenceLevel::Lowest);
+
     while (!curr_type_is(TokenType::Semicolon) && !curr_type_is(TokenType::EOS))
         consume();
 
-    return let_stmt;
+    return std::make_unique<ast::LetStmt>(let_tok, std::move(ident), std::move(value));
 }
 
 auto Parser::parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>
 {
-    auto ret_stmt = std::make_unique<ast::ReturnStmt>(m_curr_tok);
+    auto ret_tok = m_curr_tok;
 
     consume();
+    auto ret_value = parse_expression(PrecedenceLevel::Lowest);
 
     while (!curr_type_is(TokenType::Semicolon) && !curr_type_is(TokenType::EOS))
         consume();
 
-    return ret_stmt;
+    return std::make_unique<ast::ReturnStmt>(ret_tok, std::move(ret_value));
 }
 
 auto Parser::parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt>
@@ -159,7 +161,7 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ExprNodePtr
     {
         m_errors.emplace_back("No prefix parse function found for token '"
                               + type_to_string(m_curr_tok.m_type)
-                              + "'\n");
+                              + "'");
         return nullptr;
     }
 
@@ -171,7 +173,7 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ExprNodePtr
         {
             m_errors.emplace_back("No infix parse function found for token '"
                                   + type_to_string(m_peek_tok.m_type)
-                                  + "'\n");
+                                  + "'");
             return left_expr;
         }
         consume();
@@ -202,7 +204,7 @@ auto Parser::parse_int_literal() -> ExprNodePtr
 
     m_errors.emplace_back("Could not parse "
                           + std::string{int_tok}
-                          + " as integer\n");
+                          + " as integer");
     return nullptr;
 }
 
@@ -369,11 +371,11 @@ bool Parser::expect_peek(const TokenType& type)
 
 void Parser::peek_error(const TokenType& type)
 {
-    m_errors.emplace_back("Expected next token to be ["
+    m_errors.emplace_back("Expected next token to be "
                           + type_to_string(type)
-                          + "], but got ["
+                          + ", but got "
                           + type_to_string(m_peek_tok.m_type)
-                          + "] instead\n");
+                          + " instead");
 }
 
 void Parser::register_prefix(TokenType type, PrefixParseFn pre_parse_fn)

@@ -47,8 +47,6 @@ auto make_token(TokenType type, std::optional<std::string> literal) -> Token;
 
 auto make_keywords() -> std::unordered_map<std::string, TokenType>;
 
-std::string format_token(const Token& tok);
-
 std::string type_to_string(const TokenType& type);
 
 #endif  // TOKEN_HPP
