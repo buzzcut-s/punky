@@ -1,6 +1,6 @@
 #include <cctype>
 
-namespace utils
+namespace punky::utils
 {
 
 bool is_letter(char ch)
@@ -18,4 +18,4 @@ bool is_whitespace(char ch)
     return std::isspace(ch) != 0;
 }
 
-}  // namespace utils
+}  // namespace punky::utils

@@ -1,7 +1,7 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-namespace utils
+namespace punky::utils
 {
 
 bool is_letter(char ch);
@@ -10,6 +10,6 @@ bool is_digit(char ch);
 
 bool is_whitespace(char ch);
 
-}  // namespace utils
+}  // namespace punky::utils
 
 #endif  // UTILS_HPP

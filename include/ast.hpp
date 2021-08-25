@@ -10,6 +10,7 @@
 
 namespace punky::ast
 {
+
 using punky::tok::Token;
 
 struct AstNode
@@ -36,7 +37,8 @@ public:
     ~ExprNode() override                  = default;
 
     explicit ExprNode(Token tok) :
-      m_token(std::move(tok)) {}
+      m_token(std::move(tok))
+    {}
 
     [[nodiscard]] std::string token_literal() const final;
     [[nodiscard]] std::string to_string() const override = 0;
@@ -59,7 +61,8 @@ public:
     ~StmtNode() override                  = default;
 
     explicit StmtNode(Token tok) :
-      m_token(std::move(tok)) {}
+      m_token(std::move(tok))
+    {}
 
     [[nodiscard]] std::string token_literal() const final;
     [[nodiscard]] std::string to_string() const override = 0;

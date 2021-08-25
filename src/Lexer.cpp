@@ -9,6 +9,7 @@
 
 namespace punky::lex
 {
+
 Lexer::Lexer(std::string line) :
   m_line{std::move(line)},
   m_it{m_line.cbegin()},

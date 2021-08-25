@@ -13,6 +13,7 @@ enum class TokenType;
 
 namespace punky::lex
 {
+
 using punky::tok::Token;
 using punky::tok::TokenType;
 
