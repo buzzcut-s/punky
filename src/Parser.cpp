@@ -53,7 +53,7 @@ Parser::Parser(Lexer lex) :
 
 void Parser::consume()
 {
-    m_curr_tok = m_peek_tok;
+    std::swap(m_curr_tok, m_peek_tok);
     m_peek_tok = m_lex.next_token();
 }
 
