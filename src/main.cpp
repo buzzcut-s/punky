@@ -3,6 +3,7 @@
 
 #include "../include/Lexer.hpp"
 #include "../include/Parser.hpp"
+#include "../include/ast.hpp"
 #include "../include/readline.hpp"
 
 int main()

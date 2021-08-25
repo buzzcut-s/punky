@@ -3,9 +3,12 @@
 #include <charconv>
 #include <functional>
 #include <memory>
+#include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include "../include/Lexer.hpp"
+#include "../include/Token.hpp"
 #include "../include/ast.hpp"
 
 namespace punky::par
@@ -13,7 +16,7 @@ namespace punky::par
 
 static auto make_precedence_map() -> std::unordered_map<TokenType, PrecedenceLevel>;
 
-Parser::Parser(punky::lex::Lexer lex) :
+Parser::Parser(Lexer lex) :
   m_lex{std::move(lex)},
   m_precedences{make_precedence_map()}
 {

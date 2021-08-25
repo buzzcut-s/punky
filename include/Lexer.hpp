@@ -5,12 +5,16 @@
 #include <string>
 #include <unordered_map>
 
-#include "Token.hpp"
+namespace punky::tok
+{
+struct Token;
+enum class TokenType;
+}  // namespace punky::tok
 
 namespace punky::lex
 {
-using tok::Token;
-using tok::TokenType;
+using punky::tok::Token;
+using punky::tok::TokenType;
 
 class Lexer
 {
@@ -26,15 +30,16 @@ private:
 
     std::unordered_map<std::string, TokenType> m_keywords;
 
+    [[nodiscard]] auto peek() const -> std::optional<char>;
+
     void consume();
-    auto peek() const -> std::optional<char>;
 
     void skip_whitespace();
 
     std::string read_identifier();
     std::string read_number();
 
-    auto token_type(const std::string& tok) const -> TokenType;
+    [[nodiscard]] auto token_type(const std::string& tok) const -> TokenType;
 };
 }  // namespace punky::lex
 

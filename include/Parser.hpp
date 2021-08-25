@@ -9,12 +9,24 @@
 
 #include "Lexer.hpp"
 #include "Token.hpp"
-#include "ast.hpp"
+
+namespace punky::ast
+{
+class ExprNode;
+class Program;
+class StmtNode;
+class LetStmt;
+class ReturnStmt;
+class ExpressionStmt;
+class BlockStmt;
+class Identifier;
+}  // namespace punky::ast
 
 namespace punky::par
 {
-using tok::Token;
-using tok::TokenType;
+using punky::lex::Lexer;
+using punky::tok::Token;
+using punky::tok::TokenType;
 
 enum class PrecedenceLevel
 {
@@ -45,9 +57,9 @@ private:
     using PrefixParseFn  = std::function<ExprNodePtr()>;
     using InfixParseFn   = std::function<ExprNodePtr(ExprNodePtr)>;
 
-    punky::lex::Lexer m_lex;
-    punky::tok::Token m_curr_tok{};
-    punky::tok::Token m_peek_tok{};
+    Lexer m_lex;
+    Token m_curr_tok{};
+    Token m_peek_tok{};
 
     std::vector<std::string> m_errors{};
 
@@ -78,8 +90,8 @@ private:
     auto parse_call_expression(ExprNodePtr function) -> ExprNodePtr;
     auto parse_call_arguments() -> std::unique_ptr<ExprNodeVector>;
 
-    bool curr_type_is(const TokenType& type) const;
-    bool peek_type_is(const TokenType& type) const;
+    [[nodiscard]] bool curr_type_is(const TokenType& type) const;
+    [[nodiscard]] bool peek_type_is(const TokenType& type) const;
 
     bool expect_peek(const TokenType& type);
     void peek_error(const TokenType& type);
@@ -87,8 +99,8 @@ private:
     void register_prefix(TokenType type, PrefixParseFn pre_parse_fn);
     void register_infix(TokenType type, InfixParseFn in_parse_fn);
 
-    auto curr_precedence() const -> PrecedenceLevel;
-    auto peek_precedence() const -> PrecedenceLevel;
+    [[nodiscard]] auto curr_precedence() const -> PrecedenceLevel;
+    [[nodiscard]] auto peek_precedence() const -> PrecedenceLevel;
 };
 }  // namespace punky::par
 

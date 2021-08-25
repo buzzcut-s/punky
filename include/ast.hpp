@@ -10,7 +10,7 @@
 
 namespace punky::ast
 {
-using tok::Token;
+using punky::tok::Token;
 
 struct AstNode
 {
@@ -116,7 +116,7 @@ public:
     LetStmt& operator=(LetStmt&& other) = default;
     ~LetStmt() override                 = default;
 
-    explicit LetStmt(Token tok, Identifier name, ExprNodePtr value) :
+    LetStmt(Token tok, Identifier name, ExprNodePtr value) :
       StmtNode{std::move(tok)},
       m_name(std::move(name)),
       m_value{std::move(value)}
@@ -139,7 +139,7 @@ public:
     ReturnStmt& operator=(ReturnStmt&& other) = default;
     ~ReturnStmt() override                    = default;
 
-    explicit ReturnStmt(Token tok, ExprNodePtr ret_value) :
+    ReturnStmt(Token tok, ExprNodePtr ret_value) :
       StmtNode{std::move(tok)},
       m_ret_value{std::move(ret_value)}
     {}
@@ -160,7 +160,7 @@ public:
     ExpressionStmt& operator=(ExpressionStmt&& other) = default;
     ~ExpressionStmt() override                        = default;
 
-    explicit ExpressionStmt(Token tok, ExprNodePtr expression) :
+    ExpressionStmt(Token tok, ExprNodePtr expression) :
       StmtNode{std::move(tok)},
       m_expression{std::move(expression)}
     {}
