@@ -120,4 +120,19 @@ std::string IfExpression::to_string() const
     return if_str;
 }
 
+std::string FunctionLiteral::to_string() const
+{
+    std::string fn_str;
+    if (m_params && m_body)
+    {
+        fn_str.append(token_literal() + "(");
+        for (const auto& param : *m_params)
+            fn_str.append(param.to_string() + ", ");
+        fn_str.pop_back();
+        fn_str.pop_back();
+        fn_str.append(") " + m_body->to_string());
+    }
+    return fn_str;
+}
+
 }  // namespace ast

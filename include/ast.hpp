@@ -297,6 +297,30 @@ private:
     std::unique_ptr<BlockStmt> m_alternative;
 };
 
+class FunctionLiteral : public ExprNode
+{
+public:
+    FunctionLiteral()                             = delete;
+    FunctionLiteral(FunctionLiteral const& other) = delete;
+    FunctionLiteral& operator=(FunctionLiteral const& other) = delete;
+    FunctionLiteral(FunctionLiteral&& other)                 = default;
+    FunctionLiteral& operator=(FunctionLiteral&& other) = default;
+    ~FunctionLiteral() override                         = default;
+
+    FunctionLiteral(Token tok, std::unique_ptr<std::vector<ast::Identifier>> params,
+                    std::unique_ptr<BlockStmt> body) :
+      ExprNode{std::move(tok)},
+      m_params{std::move(params)},
+      m_body{std::move(body)}
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    std::unique_ptr<std::vector<ast::Identifier>> m_params;
+    std::unique_ptr<BlockStmt>                    m_body;
+};
+
 }  // namespace ast
 
 #endif  // AST_HPP
