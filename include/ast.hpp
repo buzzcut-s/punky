@@ -162,6 +162,27 @@ private:
     std::unique_ptr<ExprNode> m_expression;
 };
 
+class BlockStmt : public StmtNode
+{
+public:
+    BlockStmt()                       = default;
+    BlockStmt(BlockStmt const& other) = delete;
+    BlockStmt& operator=(BlockStmt const& other) = delete;
+    BlockStmt(BlockStmt&& other)                 = default;
+    BlockStmt& operator=(BlockStmt&& other) = default;
+    ~BlockStmt() override                   = default;
+
+    explicit BlockStmt(Token tok, std::vector<std::unique_ptr<StmtNode>> blk_statements) :
+      StmtNode{std::move(tok)},
+      m_blk_statements{std::move(blk_statements)}
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    std::vector<std::unique_ptr<StmtNode>> m_blk_statements;
+};
+
 class IntLiteral : public ExprNode
 {
 public:

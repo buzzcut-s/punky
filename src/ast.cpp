@@ -68,6 +68,14 @@ std::string ExpressionStmt::to_string() const
     return "";
 }
 
+std::string BlockStmt::to_string() const
+{
+    std::string blk_str;
+    for (const auto& stmt : m_blk_statements)
+        blk_str.append(stmt->to_string() + "\n");
+    return blk_str;
+}
+
 std::string IntLiteral::to_string() const
 {
     return std::to_string(m_int_value);
