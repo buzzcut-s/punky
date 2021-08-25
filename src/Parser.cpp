@@ -154,7 +154,12 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ExprNodePtr
     {
         auto infix_fn = m_infix_parse_fns[m_peek_tok.m_type];
         if (!infix_fn)
+        {
+            m_errors.emplace_back("No infix parse function found for token '"
+                                  + type_to_string(m_peek_tok.m_type)
+                                  + "'\n");
             return nullptr;
+        }
         consume();
         left_expr = infix_fn(std::move(left_expr));
     }
