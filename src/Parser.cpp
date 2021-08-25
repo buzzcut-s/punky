@@ -105,7 +105,7 @@ auto Parser::parse_let_statement() -> std::unique_ptr<ast::LetStmt>
 
     auto value = parse_expression(PrecedenceLevel::Lowest);
 
-    while (!curr_type_is(TokenType::Semicolon) && !curr_type_is(TokenType::EOS))
+    if (peek_type_is(TokenType::Semicolon))
         consume();
 
     return std::make_unique<ast::LetStmt>(let_tok, std::move(ident), std::move(value));
@@ -114,11 +114,10 @@ auto Parser::parse_let_statement() -> std::unique_ptr<ast::LetStmt>
 auto Parser::parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>
 {
     auto ret_tok = m_curr_tok;
-
     consume();
     auto ret_value = parse_expression(PrecedenceLevel::Lowest);
 
-    while (!curr_type_is(TokenType::Semicolon) && !curr_type_is(TokenType::EOS))
+    if (peek_type_is(TokenType::Semicolon))
         consume();
 
     return std::make_unique<ast::ReturnStmt>(ret_tok, std::move(ret_value));
@@ -126,16 +125,13 @@ auto Parser::parse_return_statement() -> std::unique_ptr<ast::ReturnStmt>
 
 auto Parser::parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt>
 {
-    auto expression_tok = m_curr_tok;
-
-    auto expression      = parse_expression(PrecedenceLevel::Lowest);
-    auto expression_stmt = std::make_unique<ast::ExpressionStmt>(std::move(expression_tok),
-                                                                 std::move(expression));
+    auto expr_tok   = m_curr_tok;  // Not moving, parse_expr() needs m_curr_tok
+    auto expression = parse_expression(PrecedenceLevel::Lowest);
 
     if (peek_type_is(TokenType::Semicolon))
         consume();
 
-    return expression_stmt;
+    return std::make_unique<ast::ExpressionStmt>(std::move(expr_tok), std::move(expression));
 }
 
 auto Parser::parse_block_statement() -> std::unique_ptr<ast::BlockStmt>
@@ -143,7 +139,7 @@ auto Parser::parse_block_statement() -> std::unique_ptr<ast::BlockStmt>
     auto blk_tok = m_curr_tok;
     auto blk     = std::make_unique<ast::BlockStmt>(blk_tok);
     consume();
-    while (!curr_type_is(TokenType::RightBrace) && !curr_type_is(TokenType::EOS))
+    while (!curr_type_is(TokenType::RightBrace))
     {
         auto stmt = parse_statement();
         if (stmt)
@@ -156,7 +152,6 @@ auto Parser::parse_block_statement() -> std::unique_ptr<ast::BlockStmt>
 auto Parser::parse_expression(PrecedenceLevel precedence) -> ExprNodePtr
 {
     auto prefix_fn = m_prefix_parse_fns[m_curr_tok.m_type];
-
     if (!prefix_fn)
     {
         m_errors.emplace_back("No prefix parse function found for token '"
@@ -190,20 +185,18 @@ auto Parser::parse_identifier() -> ExprNodePtr
 
 auto Parser::parse_int_literal() -> ExprNodePtr
 {
-    std::string_view int_tok{};
-    if (m_curr_tok.m_literal.has_value())
-        int_tok = m_curr_tok.m_literal.value();
+    std::string_view buff{m_curr_tok.m_literal.value()};
 
     int int_val{};
     if (const auto [p, ec] =
-          std::from_chars(int_tok.data(), int_tok.data() + int_tok.size(), int_val);
+          std::from_chars(buff.data(), buff.data() + buff.size(), int_val);
         ec == std::errc())
     {
         return std::make_unique<ast::IntLiteral>(std::move(m_curr_tok), int_val);
     }
 
-    m_errors.emplace_back("Could not parse "
-                          + std::string{int_tok}
+    m_errors.emplace_back("Could not parse "  // This state should be unreachable, in theory
+                          + std::string{buff}
                           + " as integer");
     return nullptr;
 }
@@ -273,7 +266,8 @@ auto Parser::parse_if_expression() -> ExprNodePtr
 
 auto Parser::parse_function_literal() -> ExprNodePtr
 {
-    auto fn_tok = m_curr_tok;
+    auto func_tok = m_curr_tok;
+
     if (!expect_peek(TokenType::LeftParen))
         return nullptr;
 
@@ -284,7 +278,7 @@ auto Parser::parse_function_literal() -> ExprNodePtr
 
     auto body = parse_block_statement();
 
-    return std::make_unique<ast::FunctionLiteral>(fn_tok, std::move(params), std::move(body));
+    return std::make_unique<ast::FunctionLiteral>(func_tok, std::move(params), std::move(body));
 }
 
 auto Parser::parse_function_params() -> std::unique_ptr<std::vector<ast::Identifier>>
@@ -294,8 +288,8 @@ auto Parser::parse_function_params() -> std::unique_ptr<std::vector<ast::Identif
         consume();
         return std::make_unique<std::vector<ast::Identifier>>();
     }
-
     consume();
+
     auto ident = ast::Identifier(std::move(m_curr_tok));
 
     std::vector<ast::Identifier> params{std::move(ident)};
@@ -328,8 +322,8 @@ auto Parser::parse_call_arguments() -> std::unique_ptr<ExprNodeList>
         consume();
         return std::make_unique<ExprNodeList>();
     }
-
     consume();
+
     auto args_expr = parse_expression(PrecedenceLevel::Lowest);
 
     ExprNodeList args{};
