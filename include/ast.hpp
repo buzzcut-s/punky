@@ -300,6 +300,9 @@ private:
 class CallExpression : public ExprNode
 {
 public:
+    using ExprNodePtr  = std::unique_ptr<ast::ExprNode>;
+    using ExprNodeList = std::vector<ExprNodePtr>;
+
     CallExpression()                            = delete;
     CallExpression(CallExpression const& other) = delete;
     CallExpression& operator=(CallExpression const& other) = delete;
@@ -307,8 +310,8 @@ public:
     CallExpression& operator=(CallExpression&& other) = default;
     ~CallExpression() override                        = default;
 
-    CallExpression(Token tok, std::unique_ptr<ExprNode> function,
-                   std::vector<std::unique_ptr<ExprNode>> arguments) :
+    CallExpression(Token tok, ExprNodePtr function,
+                   std::unique_ptr<ExprNodeList> arguments) :
       ExprNode{std::move(tok)},
       m_function{std::move(function)},
       m_arguments{std::move(arguments)}
@@ -317,8 +320,8 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    std::unique_ptr<ExprNode>              m_function;
-    std::vector<std::unique_ptr<ExprNode>> m_arguments;
+    ExprNodePtr                   m_function;
+    std::unique_ptr<ExprNodeList> m_arguments;
 };
 
 class FunctionLiteral : public ExprNode

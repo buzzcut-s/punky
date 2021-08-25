@@ -129,7 +129,7 @@ std::string CallExpression::to_string() const
     {
         call_str.append(m_function->to_string() + token_literal());
         std::string args_str;
-        for (const auto& args : m_arguments)
+        for (const auto& args : *m_arguments)
             args_str.append(args->to_string() + ", ");
         if (args_str.size() > 2)
         {

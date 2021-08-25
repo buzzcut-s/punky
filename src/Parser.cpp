@@ -54,6 +54,9 @@ Parser::Parser(Lexer lex) :
     register_infix(TokenType::Greater, [this](ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
     });
+    register_infix(TokenType::LeftParen, [this](ExprNodePtr function) {
+        return parse_call_expression(std::move(function));
+    });
 }
 
 void Parser::consume()
@@ -306,6 +309,41 @@ auto Parser::parse_function_params() -> std::unique_ptr<std::vector<ast::Identif
         return nullptr;
 
     return std::make_unique<std::vector<ast::Identifier>>(std::move(params));
+}
+
+auto Parser::parse_call_expression(ExprNodePtr function) -> ExprNodePtr
+{
+    auto call_tok  = m_curr_tok;
+    auto arguments = parse_call_arguments();
+    return std::make_unique<ast::CallExpression>(call_tok,
+                                                 std::move(function), std::move(arguments));
+}
+
+auto Parser::parse_call_arguments() -> std::unique_ptr<ExprNodeList>
+{
+    if (peek_type_is(TokenType::RightParen))
+    {
+        consume();
+        return std::make_unique<ExprNodeList>();
+    }
+
+    consume();
+    auto args_expr = parse_expression(PrecedenceLevel::Lowest);
+
+    ExprNodeList args{};
+    args.push_back(std::move(args_expr));
+    while (peek_type_is(TokenType::Comma))
+    {
+        consume();
+        consume();
+        args_expr = parse_expression(PrecedenceLevel::Lowest);
+        args.push_back(std::move(args_expr));
+    }
+
+    if (!expect_peek(TokenType::RightParen))
+        return nullptr;
+
+    return std::make_unique<ExprNodeList>(std::move(args));
 }
 
 bool Parser::curr_type_is(const TokenType& type) const

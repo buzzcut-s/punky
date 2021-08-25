@@ -47,6 +47,7 @@ public:
 
 private:
     using ExprNodePtr   = std::unique_ptr<ast::ExprNode>;
+    using ExprNodeList  = std::vector<ExprNodePtr>;
     using PrefixParseFn = std::function<ExprNodePtr()>;
     using InfixParseFn  = std::function<ExprNodePtr(ExprNodePtr)>;
 
@@ -76,9 +77,12 @@ private:
     auto parse_boolean() -> ExprNodePtr;
     auto parse_grouped_expression() -> ExprNodePtr;
     auto parse_if_expression() -> ExprNodePtr;
-    auto parse_function_literal() -> ExprNodePtr;
 
+    auto parse_function_literal() -> ExprNodePtr;
     auto parse_function_params() -> std::unique_ptr<std::vector<ast::Identifier>>;
+
+    auto parse_call_expression(ExprNodePtr function) -> ExprNodePtr;
+    auto parse_call_arguments() -> std::unique_ptr<ExprNodeList>;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;
