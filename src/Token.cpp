@@ -26,9 +26,9 @@ std::string type_to_string(const TokenType& type)
     switch (type)
     {
         case TokenType::LeftParen:
-            return "LEFT_PAREN";
+            return "LEFT_PAREN - UNREACHABLE";
         case TokenType::RightParen:
-            return "RIGHT_PAREN";
+            return "RIGHT_PAREN - UNREACHABLE";
         case TokenType::LeftBracket:
             return "LEFT_BRACKET";
         case TokenType::RightBracket:
