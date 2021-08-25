@@ -80,9 +80,9 @@ std::string type_to_string(const TokenType& type)
         case TokenType::Let:
             return "LET";
         case TokenType::True:
-            return "TRUE";
+            return "true";
         case TokenType::False:
-            return "FALSE";
+            return "false";
         case TokenType::If:
             return "IF";
         case TokenType::Else:

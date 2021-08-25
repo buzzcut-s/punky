@@ -227,6 +227,27 @@ private:
     std::unique_ptr<ExprNode> m_right;
 };
 
+class Boolean : public ExprNode
+{
+public:
+    Boolean()                     = delete;
+    Boolean(Boolean const& other) = default;
+    Boolean& operator=(Boolean const& other) = default;
+    Boolean(Boolean&& other)                 = default;
+    Boolean& operator=(Boolean&& other) = default;
+    ~Boolean() override                 = default;
+
+    Boolean(Token tok, bool bool_value) :
+      ExprNode{std::move(tok)},
+      m_bool_value(bool_value)
+    {}
+
+    [[nodiscard]] std::string to_string() const override;
+
+private:
+    bool m_bool_value;
+};
+
 }  // namespace ast
 
 #endif  // AST_HPP

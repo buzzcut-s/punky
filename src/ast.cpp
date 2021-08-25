@@ -89,4 +89,9 @@ std::string InfixExpression::to_string() const
     return "";
 }
 
+std::string Boolean::to_string() const
+{
+    return token_literal();
+}
+
 }  // namespace ast

@@ -24,6 +24,8 @@ Parser::Parser(Lexer lex) :
     register_prefix(TokenType::Int, [this] { return parse_int_literal(); });
     register_prefix(TokenType::Bang, [this] { return parse_prefix_expression(); });
     register_prefix(TokenType::Minus, [this] { return parse_prefix_expression(); });
+    register_prefix(TokenType::True, [this] { return parse_boolean(); });
+    register_prefix(TokenType::False, [this] { return parse_boolean(); });
 
     register_infix(TokenType::Plus, [this](ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
@@ -199,6 +201,13 @@ auto Parser::parse_infix_expression(ExprNodePtr left_expr) -> ExprNodePtr
     auto right_expr = parse_expression(precedence);
     return std::make_unique<ast::InfixExpression>(infix_tok,
                                                   std::move(left_expr), std::move(right_expr));
+}
+
+auto Parser::parse_boolean() -> ExprNodePtr
+{
+    auto bool_tok = m_curr_tok;
+    bool bool_val = m_curr_tok.m_type == TokenType::True;
+    return std::make_unique<ast::Boolean>(bool_tok, bool_val);
 }
 
 bool Parser::curr_type_is(const TokenType& type) const

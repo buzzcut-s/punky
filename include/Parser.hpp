@@ -72,6 +72,7 @@ private:
     auto parse_int_literal() -> ExprNodePtr;
     auto parse_prefix_expression() -> ExprNodePtr;
     auto parse_infix_expression(ExprNodePtr left_expr) -> ExprNodePtr;
+    auto parse_boolean() -> ExprNodePtr;
 
     bool curr_type_is(const TokenType& type) const;
     bool peek_type_is(const TokenType& type) const;
