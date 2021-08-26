@@ -282,11 +282,11 @@ private:
     bool m_bool_value;
 };
 
+using OptIfAltBlk = std::optional<std::unique_ptr<ast::BlockStmt>>;
+
 class IfExpression : public ExprNode
 {
 public:
-    using OptAltBlk = std::optional<std::unique_ptr<ast::BlockStmt>>;
-
     IfExpression()                          = delete;
     IfExpression(IfExpression const& other) = delete;
     IfExpression& operator=(IfExpression const& other) = delete;
@@ -296,7 +296,7 @@ public:
 
     IfExpression(Token tok, ExprNodePtr condition,
                  std::unique_ptr<ast::BlockStmt> consequence,
-                 OptAltBlk                       alternative) :
+                 OptIfAltBlk                      alternative) :
       ExprNode{std::move(tok)},
       m_condition{std::move(condition)},
       m_consequence{std::move(consequence)},
@@ -308,7 +308,7 @@ public:
 private:
     ExprNodePtr                     m_condition;
     std::unique_ptr<ast::BlockStmt> m_consequence;
-    OptAltBlk                       m_alternative;
+    OptIfAltBlk                      m_alternative;
 };
 
 using OptCallArgs = std::optional<std::unique_ptr<ExprNodeVector>>;

@@ -24,6 +24,7 @@ using ExprNodePtr    = std::unique_ptr<ExprNode>;
 using ExprNodeVector = std::vector<ExprNodePtr>;
 using OptFnParams    = std::optional<std::unique_ptr<std::vector<Identifier>>>;
 using OptCallArgs    = std::optional<std::unique_ptr<ExprNodeVector>>;
+using OptIfAltBlk    = std::optional<std::unique_ptr<BlockStmt>>;
 }  // namespace punky::ast
 
 namespace punky::par

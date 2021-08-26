@@ -246,8 +246,6 @@ auto Parser::parse_grouped_expression() -> ast::ExprNodePtr
 
 auto Parser::parse_if_expression() -> ast::ExprNodePtr
 {
-    using OptAltBlk = std::optional<std::unique_ptr<ast::BlockStmt>>;
-
     auto if_tok = m_curr_tok;
     if (!expect_peek(TokenType::LeftParen))
         return nullptr;
@@ -262,7 +260,7 @@ auto Parser::parse_if_expression() -> ast::ExprNodePtr
 
     auto consequence = parse_block_statement();
 
-    OptAltBlk alternative;
+    ast::OptIfAltBlk alternative;
     if (peek_type_is(TokenType::Else))
     {
         consume();
