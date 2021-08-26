@@ -129,16 +129,17 @@ std::string CallExpression::to_string() const
             }
             call_str.append(args_str + ")");
         }
+        else
+            call_str.append(")");
     }
     return call_str;
 }
 
 std::string FunctionLiteral::to_string() const
 {
-    std::string fn_str;
+    std::string fn_str{token_literal() + "("};
     if (m_body)
     {
-        fn_str.append(token_literal() + "(");
         if (m_params.has_value())
         {
             std::string param_str;
@@ -151,6 +152,8 @@ std::string FunctionLiteral::to_string() const
             }
             fn_str.append(param_str + ") " + m_body->to_string());
         }
+        else
+            fn_str.append(") " + m_body->to_string());
     }
     return fn_str;
 }
