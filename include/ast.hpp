@@ -293,8 +293,8 @@ public:
     ~IfExpression() override                      = default;
 
     IfExpression(Token tok, ExprNodePtr condition,
-                 StmtNodePtr consequence,
-                 StmtNodePtr alternative) :
+                 std::unique_ptr<ast::BlockStmt> consequence,
+                 std::unique_ptr<ast::BlockStmt> alternative) :
       ExprNode{std::move(tok)},
       m_condition{std::move(condition)},
       m_consequence{std::move(consequence)},
@@ -304,9 +304,9 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    ExprNodePtr m_condition;
-    StmtNodePtr m_consequence;
-    StmtNodePtr m_alternative;
+    ExprNodePtr                     m_condition;
+    std::unique_ptr<ast::BlockStmt> m_consequence;
+    std::unique_ptr<ast::BlockStmt> m_alternative;
 };
 
 class CallExpression : public ExprNode
