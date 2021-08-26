@@ -128,15 +128,18 @@ std::string CallExpression::to_string() const
     if (m_function)
     {
         call_str.append(m_function->to_string() + token_literal());
-        std::string args_str;
-        for (const auto& args : *m_arguments)
-            args_str.append(args->to_string() + ", ");
-        if (args_str.size() > 2)
+        if (m_arguments.has_value())
         {
-            args_str.pop_back();
-            args_str.pop_back();
+            std::string args_str;
+            for (const auto& args : *m_arguments.value())
+                args_str.append(args->to_string() + ", ");
+            if (args_str.size() > 2)
+            {
+                args_str.pop_back();
+                args_str.pop_back();
+            }
+            call_str.append(args_str + ")");
         }
-        call_str.append(args_str + ")");
     }
     return call_str;
 }
@@ -144,18 +147,21 @@ std::string CallExpression::to_string() const
 std::string FunctionLiteral::to_string() const
 {
     std::string fn_str;
-    if (m_params && m_body)
+    if (m_body)
     {
         fn_str.append(token_literal() + "(");
-        std::string param_str;
-        for (const auto& param : *m_params)
-            param_str.append(param.to_string() + ", ");
-        if (param_str.size() > 2)
+        if (m_params.has_value())
         {
-            param_str.pop_back();
-            param_str.pop_back();
+            std::string param_str;
+            for (const auto& param : *m_params.value())
+                param_str.append(param.to_string() + ", ");
+            if (param_str.size() > 2)
+            {
+                param_str.pop_back();
+                param_str.pop_back();
+            }
+            fn_str.append(param_str + ") " + m_body->to_string());
         }
-        fn_str.append(param_str + ") " + m_body->to_string());
     }
     return fn_str;
 }

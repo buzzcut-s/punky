@@ -3,6 +3,7 @@
 #include <charconv>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -284,12 +285,12 @@ auto Parser::parse_function_literal() -> ExprNodePtr
     return std::make_unique<ast::FunctionLiteral>(func_tok, std::move(params), std::move(body));
 }
 
-auto Parser::parse_function_params() -> std::unique_ptr<std::vector<ast::Identifier>>
+auto Parser::parse_function_params() -> OptFnParams
 {
     if (peek_type_is(TokenType::RightParen))
     {
         consume();
-        return std::make_unique<std::vector<ast::Identifier>>();
+        return std::nullopt;
     }
     consume();
 
@@ -318,12 +319,12 @@ auto Parser::parse_call_expression(ExprNodePtr function) -> ExprNodePtr
                                                  std::move(function), std::move(arguments));
 }
 
-auto Parser::parse_call_arguments() -> std::unique_ptr<ExprNodeVector>
+auto Parser::parse_call_arguments() -> OptCallArgs
 {
     if (peek_type_is(TokenType::RightParen))
     {
         consume();
-        return std::make_unique<ExprNodeVector>();
+        return std::nullopt;
     }
     consume();
 

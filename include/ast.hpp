@@ -312,6 +312,8 @@ private:
 class CallExpression : public ExprNode
 {
 public:
+    using OptCallArgs = std::optional<std::unique_ptr<ExprNodeVector>>;
+
     CallExpression()                            = delete;
     CallExpression(CallExpression const& other) = delete;
     CallExpression& operator=(CallExpression const& other) = delete;
@@ -320,7 +322,7 @@ public:
     ~CallExpression() override                        = default;
 
     CallExpression(Token tok, ExprNodePtr function,
-                   std::unique_ptr<ExprNodeVector> arguments) :
+                   OptCallArgs arguments) :
       ExprNode{std::move(tok)},
       m_function{std::move(function)},
       m_arguments{std::move(arguments)}
@@ -329,13 +331,15 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    ExprNodePtr                     m_function;
-    std::unique_ptr<ExprNodeVector> m_arguments;
+    ExprNodePtr m_function;
+    OptCallArgs m_arguments;
 };
 
 class FunctionLiteral : public ExprNode
 {
 public:
+    using OptFnParams = std::optional<std::unique_ptr<std::vector<ast::Identifier>>>;
+
     FunctionLiteral()                             = delete;
     FunctionLiteral(FunctionLiteral const& other) = delete;
     FunctionLiteral& operator=(FunctionLiteral const& other) = delete;
@@ -343,7 +347,7 @@ public:
     FunctionLiteral& operator=(FunctionLiteral&& other) = default;
     ~FunctionLiteral() override                         = default;
 
-    FunctionLiteral(Token tok, std::unique_ptr<std::vector<ast::Identifier>> params,
+    FunctionLiteral(Token tok, OptFnParams params,
                     StmtNodePtr body) :
       ExprNode{std::move(tok)},
       m_params{std::move(params)},
@@ -353,8 +357,8 @@ public:
     [[nodiscard]] std::string to_string() const override;
 
 private:
-    std::unique_ptr<std::vector<ast::Identifier>> m_params;
-    StmtNodePtr                                   m_body;
+    OptFnParams m_params;
+    StmtNodePtr m_body;
 };
 
 }  // namespace punky::ast

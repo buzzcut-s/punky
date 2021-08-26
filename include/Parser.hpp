@@ -85,11 +85,13 @@ private:
     auto parse_grouped_expression() -> ExprNodePtr;
     auto parse_if_expression() -> ExprNodePtr;
 
+    using OptFnParams = std::optional<std::unique_ptr<std::vector<ast::Identifier>>>;
     auto parse_function_literal() -> ExprNodePtr;
-    auto parse_function_params() -> std::unique_ptr<std::vector<ast::Identifier>>;
+    auto parse_function_params() -> OptFnParams;
 
+    using OptCallArgs = std::optional<std::unique_ptr<ExprNodeVector>>;
     auto parse_call_expression(ExprNodePtr function) -> ExprNodePtr;
-    auto parse_call_arguments() -> std::unique_ptr<ExprNodeVector>;
+    auto parse_call_arguments() -> OptCallArgs;
 
     [[nodiscard]] bool curr_type_is(const TokenType& type) const;
     [[nodiscard]] bool peek_type_is(const TokenType& type) const;
