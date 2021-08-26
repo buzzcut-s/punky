@@ -257,7 +257,7 @@ auto Parser::parse_if_expression() -> ast::ExprNodePtr
 
     auto consequence = parse_block_statement();
 
-    OptAltBlk alternative{};
+    OptAltBlk alternative;
     if (peek_type_is(TokenType::Else))
     {
         consume();

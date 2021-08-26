@@ -61,10 +61,10 @@ private:
     using InfixParseFn  = std::function<ast::ExprNodePtr(ast::ExprNodePtr)>;
 
     Lexer m_lex;
-    Token m_curr_tok{};
-    Token m_peek_tok{};
+    Token m_curr_tok;
+    Token m_peek_tok;
 
-    std::vector<std::string> m_errors{};
+    std::vector<std::string> m_errors;
 
     std::unordered_map<TokenType, PrefixParseFn> m_prefix_parse_fns;
     std::unordered_map<TokenType, InfixParseFn>  m_infix_parse_fns;
