@@ -20,6 +20,10 @@ class ReturnStmt;
 class ExpressionStmt;
 class BlockStmt;
 class Identifier;
+using ExprNodePtr    = std::unique_ptr<ExprNode>;
+using ExprNodeVector = std::vector<ExprNodePtr>;
+using OptFnParams    = std::optional<std::unique_ptr<std::vector<Identifier>>>;
+using OptCallArgs    = std::optional<std::unique_ptr<ExprNodeVector>>;
 }  // namespace punky::ast
 
 namespace punky::par
@@ -53,13 +57,8 @@ public:
     auto parse_program() -> std::unique_ptr<ast::Program>;
 
 private:
-    using ExprNodePtr    = std::unique_ptr<ast::ExprNode>;
-    using ExprNodeVector = std::vector<ExprNodePtr>;
-    using PrefixParseFn  = std::function<ExprNodePtr()>;
-    using InfixParseFn   = std::function<ExprNodePtr(ExprNodePtr)>;
-
-    using OptFnParams = std::optional<std::unique_ptr<std::vector<ast::Identifier>>>;
-    using OptCallArgs = std::optional<std::unique_ptr<ExprNodeVector>>;
+    using PrefixParseFn = std::function<ast::ExprNodePtr()>;
+    using InfixParseFn  = std::function<ast::ExprNodePtr(ast::ExprNodePtr)>;
 
     Lexer m_lex;
     Token m_curr_tok{};
@@ -78,21 +77,21 @@ private:
     auto parse_expression_statement() -> std::unique_ptr<ast::ExpressionStmt>;
     auto parse_block_statement() -> std::unique_ptr<ast::BlockStmt>;
 
-    auto parse_expression(PrecedenceLevel precedence) -> ExprNodePtr;
+    auto parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr;
 
-    auto parse_identifier() -> ExprNodePtr;
-    auto parse_int_literal() -> ExprNodePtr;
-    auto parse_prefix_expression() -> ExprNodePtr;
-    auto parse_infix_expression(ExprNodePtr left_expr) -> ExprNodePtr;
-    auto parse_boolean() -> ExprNodePtr;
-    auto parse_grouped_expression() -> ExprNodePtr;
-    auto parse_if_expression() -> ExprNodePtr;
+    auto parse_identifier() -> ast::ExprNodePtr;
+    auto parse_int_literal() -> ast::ExprNodePtr;
+    auto parse_prefix_expression() -> ast::ExprNodePtr;
+    auto parse_infix_expression(ast::ExprNodePtr left_expr) -> ast::ExprNodePtr;
+    auto parse_boolean() -> ast::ExprNodePtr;
+    auto parse_grouped_expression() -> ast::ExprNodePtr;
+    auto parse_if_expression() -> ast::ExprNodePtr;
 
-    auto parse_function_literal() -> ExprNodePtr;
-    auto parse_function_params() -> OptFnParams;
+    auto parse_function_literal() -> ast::ExprNodePtr;
+    auto parse_function_params() -> ast::OptFnParams;
 
-    auto parse_call_expression(ExprNodePtr function) -> ExprNodePtr;
-    auto parse_call_arguments() -> OptCallArgs;
+    auto parse_call_expression(ast::ExprNodePtr function) -> ast::ExprNodePtr;
+    auto parse_call_arguments() -> ast::OptCallArgs;
 
     [[nodiscard]] bool curr_type_is(const TokenType& type) const;
     [[nodiscard]] bool peek_type_is(const TokenType& type) const;

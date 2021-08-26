@@ -296,7 +296,7 @@ public:
 
     IfExpression(Token tok, ExprNodePtr condition,
                  std::unique_ptr<ast::BlockStmt> consequence,
-                 OptAltBlk alternative) :
+                 OptAltBlk                       alternative) :
       ExprNode{std::move(tok)},
       m_condition{std::move(condition)},
       m_consequence{std::move(consequence)},
@@ -311,11 +311,11 @@ private:
     OptAltBlk                       m_alternative;
 };
 
+using OptCallArgs = std::optional<std::unique_ptr<ExprNodeVector>>;
+
 class CallExpression : public ExprNode
 {
 public:
-    using OptCallArgs = std::optional<std::unique_ptr<ExprNodeVector>>;
-
     CallExpression()                            = delete;
     CallExpression(CallExpression const& other) = delete;
     CallExpression& operator=(CallExpression const& other) = delete;
@@ -337,11 +337,11 @@ private:
     OptCallArgs m_arguments;
 };
 
+using OptFnParams = std::optional<std::unique_ptr<std::vector<ast::Identifier>>>;
+
 class FunctionLiteral : public ExprNode
 {
 public:
-    using OptFnParams = std::optional<std::unique_ptr<std::vector<ast::Identifier>>>;
-
     FunctionLiteral()                             = delete;
     FunctionLiteral(FunctionLiteral const& other) = delete;
     FunctionLiteral& operator=(FunctionLiteral const& other) = delete;

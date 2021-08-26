@@ -34,31 +34,31 @@ Parser::Parser(Lexer lex) :
     register_prefix(TokenType::If, [this] { return parse_if_expression(); });
     register_prefix(TokenType::Func, [this] { return parse_function_literal(); });
 
-    register_infix(TokenType::Plus, [this](ExprNodePtr left_expr) {
+    register_infix(TokenType::Plus, [this](ast::ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
     });
-    register_infix(TokenType::Minus, [this](ExprNodePtr left_expr) {
+    register_infix(TokenType::Minus, [this](ast::ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
     });
-    register_infix(TokenType::Asterisk, [this](ExprNodePtr left_expr) {
+    register_infix(TokenType::Asterisk, [this](ast::ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
     });
-    register_infix(TokenType::Slash, [this](ExprNodePtr left_expr) {
+    register_infix(TokenType::Slash, [this](ast::ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
     });
-    register_infix(TokenType::EqualEqual, [this](ExprNodePtr left_expr) {
+    register_infix(TokenType::EqualEqual, [this](ast::ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
     });
-    register_infix(TokenType::BangEqual, [this](ExprNodePtr left_expr) {
+    register_infix(TokenType::BangEqual, [this](ast::ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
     });
-    register_infix(TokenType::Less, [this](ExprNodePtr left_expr) {
+    register_infix(TokenType::Less, [this](ast::ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
     });
-    register_infix(TokenType::Greater, [this](ExprNodePtr left_expr) {
+    register_infix(TokenType::Greater, [this](ast::ExprNodePtr left_expr) {
         return parse_infix_expression(std::move(left_expr));
     });
-    register_infix(TokenType::LeftParen, [this](ExprNodePtr function) {
+    register_infix(TokenType::LeftParen, [this](ast::ExprNodePtr function) {
         return parse_call_expression(std::move(function));
     });
 }
@@ -153,7 +153,7 @@ auto Parser::parse_block_statement() -> std::unique_ptr<ast::BlockStmt>
     return blk;
 }
 
-auto Parser::parse_expression(PrecedenceLevel precedence) -> ExprNodePtr
+auto Parser::parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr
 {
     auto prefix_fn = m_prefix_parse_fns[m_curr_tok.m_type];
     if (!prefix_fn)
@@ -182,12 +182,12 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ExprNodePtr
     return left_expr;
 }
 
-auto Parser::parse_identifier() -> ExprNodePtr
+auto Parser::parse_identifier() -> ast::ExprNodePtr
 {
     return std::make_unique<ast::Identifier>(std::move(m_curr_tok));
 }
 
-auto Parser::parse_int_literal() -> ExprNodePtr
+auto Parser::parse_int_literal() -> ast::ExprNodePtr
 {
     std::string_view buff{m_curr_tok.m_literal.value()};
 
@@ -205,7 +205,7 @@ auto Parser::parse_int_literal() -> ExprNodePtr
     return nullptr;
 }
 
-auto Parser::parse_prefix_expression() -> ExprNodePtr
+auto Parser::parse_prefix_expression() -> ast::ExprNodePtr
 {
     auto prefix_tok = m_curr_tok;
     consume();
@@ -213,7 +213,7 @@ auto Parser::parse_prefix_expression() -> ExprNodePtr
     return std::make_unique<ast::PrefixExpression>(prefix_tok, std::move(right_expr));
 }
 
-auto Parser::parse_infix_expression(ExprNodePtr left_expr) -> ExprNodePtr
+auto Parser::parse_infix_expression(ast::ExprNodePtr left_expr) -> ast::ExprNodePtr
 {
     auto infix_tok  = m_curr_tok;
     auto precedence = curr_precedence();
@@ -223,14 +223,14 @@ auto Parser::parse_infix_expression(ExprNodePtr left_expr) -> ExprNodePtr
                                                   std::move(left_expr), std::move(right_expr));
 }
 
-auto Parser::parse_boolean() -> ExprNodePtr
+auto Parser::parse_boolean() -> ast::ExprNodePtr
 {
     auto bool_tok = m_curr_tok;
     bool bool_val = m_curr_tok.m_type == TokenType::True;
     return std::make_unique<ast::Boolean>(bool_tok, bool_val);
 }
 
-auto Parser::parse_grouped_expression() -> ExprNodePtr
+auto Parser::parse_grouped_expression() -> ast::ExprNodePtr
 {
     consume();
     auto expression = parse_expression(PrecedenceLevel::Lowest);
@@ -239,7 +239,7 @@ auto Parser::parse_grouped_expression() -> ExprNodePtr
     return expression;
 }
 
-auto Parser::parse_if_expression() -> ExprNodePtr
+auto Parser::parse_if_expression() -> ast::ExprNodePtr
 {
     using OptAltBlk = std::optional<std::unique_ptr<ast::BlockStmt>>;
 
@@ -270,7 +270,7 @@ auto Parser::parse_if_expression() -> ExprNodePtr
                                                std::move(consequence), std::move(alternative));
 }
 
-auto Parser::parse_function_literal() -> ExprNodePtr
+auto Parser::parse_function_literal() -> ast::ExprNodePtr
 {
     auto func_tok = m_curr_tok;
 
@@ -287,7 +287,7 @@ auto Parser::parse_function_literal() -> ExprNodePtr
     return std::make_unique<ast::FunctionLiteral>(func_tok, std::move(params), std::move(body));
 }
 
-auto Parser::parse_function_params() -> OptFnParams
+auto Parser::parse_function_params() -> ast::OptFnParams
 {
     if (peek_type_is(TokenType::RightParen))
     {
@@ -313,7 +313,7 @@ auto Parser::parse_function_params() -> OptFnParams
     return std::make_unique<std::vector<ast::Identifier>>(std::move(params));
 }
 
-auto Parser::parse_call_expression(ExprNodePtr function) -> ExprNodePtr
+auto Parser::parse_call_expression(ast::ExprNodePtr function) -> ast::ExprNodePtr
 {
     auto call_tok  = m_curr_tok;
     auto arguments = parse_call_arguments();
@@ -321,7 +321,7 @@ auto Parser::parse_call_expression(ExprNodePtr function) -> ExprNodePtr
                                                  std::move(function), std::move(arguments));
 }
 
-auto Parser::parse_call_arguments() -> OptCallArgs
+auto Parser::parse_call_arguments() -> ast::OptCallArgs
 {
     if (peek_type_is(TokenType::RightParen))
     {
@@ -332,7 +332,7 @@ auto Parser::parse_call_arguments() -> OptCallArgs
 
     auto args_expr = parse_expression(PrecedenceLevel::Lowest);
 
-    ExprNodeVector args{};
+    ast::ExprNodeVector args;
     args.push_back(std::move(args_expr));
     while (peek_type_is(TokenType::Comma))
     {
@@ -345,7 +345,7 @@ auto Parser::parse_call_arguments() -> OptCallArgs
     if (!expect_peek(TokenType::RightParen))
         return nullptr;
 
-    return std::make_unique<ExprNodeVector>(std::move(args));
+    return std::make_unique<ast::ExprNodeVector>(std::move(args));
 }
 
 bool Parser::curr_type_is(const TokenType& type) const
