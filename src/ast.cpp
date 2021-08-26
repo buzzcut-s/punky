@@ -104,8 +104,8 @@ std::string IfExpression::to_string() const
     {
         std::string if_str{token_literal() + " " + m_condition->to_string()
                            + " " + m_consequence->to_string()};
-        if (m_alternative)
-            if_str.append("else " + m_alternative->to_string());
+        if (m_alternative.has_value())
+            if_str.append("else " + m_alternative.value()->to_string());
         return if_str;
     }
     return "";
