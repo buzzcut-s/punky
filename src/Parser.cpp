@@ -145,6 +145,11 @@ auto Parser::parse_block_statement() -> std::unique_ptr<ast::BlockStmt>
     consume();
     while (!curr_type_is(TokenType::RightBrace))
     {
+        if (curr_type_is(TokenType::EOS))
+        {
+            m_errors.emplace_back("Function body missing closing '}'");
+            return nullptr;
+        }
         auto stmt = parse_statement();
         if (stmt)
             blk->push_stmt(std::move(stmt));
