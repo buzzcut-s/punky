@@ -147,7 +147,7 @@ auto Parser::parse_block_statement() -> std::unique_ptr<ast::BlockStmt>
     {
         if (curr_type_is(TokenType::EOS))
         {
-            m_errors.emplace_back("Function body missing closing '}'");
+            m_errors.emplace_back("Block statement missing closing '}'");
             return nullptr;
         }
         auto stmt = parse_statement();
@@ -164,8 +164,7 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr
     if (!prefix_fn)
     {
         m_errors.emplace_back("No prefix parse function found for token '"
-                              + type_to_string(m_curr_tok.m_type)
-                              + "'");
+                              + type_to_string(m_curr_tok.m_type) + "'");
         return nullptr;
     }
 
@@ -176,8 +175,7 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr
         if (!infix_fn)
         {
             m_errors.emplace_back("No infix parse function found for token '"
-                                  + type_to_string(m_peek_tok.m_type)
-                                  + "'");
+                                  + type_to_string(m_peek_tok.m_type) + "'");
             return left_expr;
         }
         consume();
@@ -204,9 +202,7 @@ auto Parser::parse_int_literal() -> ast::ExprNodePtr
         return std::make_unique<ast::IntLiteral>(std::move(m_curr_tok), int_val);
     }
 
-    m_errors.emplace_back("Could not parse "
-                          + std::string{buff}
-                          + " as integer");
+    m_errors.emplace_back("Could not parse " + std::string{buff} + " as integer");
     return nullptr;
 }
 
