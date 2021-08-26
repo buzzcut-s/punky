@@ -7,23 +7,20 @@ namespace punky::ast
 
 std::string ExprNode::token_literal() const
 {
-    if (m_token.m_literal.has_value())
-        return m_token.m_literal.value();
-    return type_to_string(m_token.m_type);
+    return m_token.m_literal.has_value() ? m_token.m_literal.value()
+                                         : type_to_string(m_token.m_type);
 }
 
 std::string StmtNode::token_literal() const
 {
-    if (m_token.m_literal.has_value())
-        return m_token.m_literal.value();
-    return type_to_string(m_token.m_type);
+    return m_token.m_literal.has_value() ? m_token.m_literal.value()
+                                         : type_to_string(m_token.m_type);
 }
 
 std::string Program::token_literal() const
 {
-    if (!m_statements.empty())
-        return m_statements[0]->token_literal();
-    return "";
+    return m_statements.empty() ? ""
+                                : m_statements[0]->token_literal();
 }
 
 std::string Program::to_string() const
@@ -41,11 +38,8 @@ void Program::push_stmt(std::unique_ptr<ast::StmtNode> stmt)
 
 std::string LetStmt::to_string() const
 {
-    std::string let_str{token_literal() + " "};
-    let_str.append(m_name.to_string());
-    if (m_value)
-        let_str.append(" = " + m_value->to_string());
-    return let_str;
+    return m_value ? token_literal() + " " + m_name.to_string() + " = " + m_value->to_string()
+                   : token_literal() + " " + m_name.to_string();
 }
 
 std::string Identifier::to_string() const
@@ -55,17 +49,14 @@ std::string Identifier::to_string() const
 
 std::string ReturnStmt::to_string() const
 {
-    std::string ret_str{token_literal() + " "};
-    if (m_ret_value)
-        ret_str.append(m_ret_value->to_string());
-    return ret_str;
+    return m_ret_value ? token_literal() + " " + m_ret_value->to_string()
+                       : token_literal() + " ";
 }
 
 std::string ExpressionStmt::to_string() const
 {
-    if (m_expression)
-        return m_expression->to_string();
-    return "";
+    return m_expression ? m_expression->to_string()
+                        : "";
 }
 
 void BlockStmt::push_stmt(std::unique_ptr<ast::StmtNode> stmt)
@@ -90,18 +81,16 @@ std::string IntLiteral::to_string() const
 
 std::string PrefixExpression::to_string() const
 {
-    if (m_right)
-        return "(" + token_literal() + " " + m_right->to_string() + ")";
-    return "";
+    return m_right ? "(" + token_literal() + " " + m_right->to_string() + ")"
+                   : "";
 }
 
 std::string InfixExpression::to_string() const
 {
-    if (m_left && m_right)
-        return "(" + m_left->to_string()
-               + " " + token_literal() + " "
-               + m_right->to_string() + ")";
-    return "";
+    return (m_left && m_right) ? "(" + m_left->to_string()
+                                   + " " + token_literal() + " "
+                                   + m_right->to_string() + ")"
+                               : "";
 }
 
 std::string Boolean::to_string() const
@@ -111,15 +100,15 @@ std::string Boolean::to_string() const
 
 std::string IfExpression::to_string() const
 {
-    std::string if_str;
     if (m_condition && m_consequence)
     {
-        if_str.append(token_literal() + " " + m_condition->to_string()
-                      + " " + m_consequence->to_string());
+        std::string if_str{token_literal() + " " + m_condition->to_string()
+                           + " " + m_consequence->to_string()};
         if (m_alternative)
             if_str.append("else " + m_alternative->to_string());
+        return if_str;
     }
-    return if_str;
+    return "";
 }
 
 std::string CallExpression::to_string() const
