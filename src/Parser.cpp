@@ -185,6 +185,24 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr
     return left_expr;
 }
 
+auto Parser::parse_prefix_expression() -> ast::ExprNodePtr
+{
+    auto prefix_tok = m_curr_tok;
+    consume();
+    auto right_expr = parse_expression(PrecedenceLevel::Prefix);
+    return std::make_unique<ast::PrefixExpression>(prefix_tok, std::move(right_expr));
+}
+
+auto Parser::parse_infix_expression(ast::ExprNodePtr left_expr) -> ast::ExprNodePtr
+{
+    auto infix_tok  = m_curr_tok;
+    auto precedence = curr_precedence();
+    consume();
+    auto right_expr = parse_expression(precedence);
+    return std::make_unique<ast::InfixExpression>(infix_tok,
+                                                  std::move(left_expr), std::move(right_expr));
+}
+
 auto Parser::parse_identifier() -> ast::ExprNodePtr
 {
     return std::make_unique<ast::Identifier>(std::move(m_curr_tok));
@@ -206,24 +224,6 @@ auto Parser::parse_int_literal() -> ast::ExprNodePtr
     return nullptr;
 }
 
-auto Parser::parse_prefix_expression() -> ast::ExprNodePtr
-{
-    auto prefix_tok = m_curr_tok;
-    consume();
-    auto right_expr = parse_expression(PrecedenceLevel::Prefix);
-    return std::make_unique<ast::PrefixExpression>(prefix_tok, std::move(right_expr));
-}
-
-auto Parser::parse_infix_expression(ast::ExprNodePtr left_expr) -> ast::ExprNodePtr
-{
-    auto infix_tok  = m_curr_tok;
-    auto precedence = curr_precedence();
-    consume();
-    auto right_expr = parse_expression(precedence);
-    return std::make_unique<ast::InfixExpression>(infix_tok,
-                                                  std::move(left_expr), std::move(right_expr));
-}
-
 auto Parser::parse_boolean() -> ast::ExprNodePtr
 {
     auto bool_tok = m_curr_tok;
@@ -235,18 +235,21 @@ auto Parser::parse_grouped_expression() -> ast::ExprNodePtr
 {
     consume();
     auto expression = parse_expression(PrecedenceLevel::Lowest);
+
     if (!expect_peek(TokenType::RightParen))
         return nullptr;
+
     return expression;
 }
 
 auto Parser::parse_if_expression() -> ast::ExprNodePtr
 {
     auto if_tok = m_curr_tok;
+
     if (!expect_peek(TokenType::LeftParen))
         return nullptr;
-
     consume();
+
     auto condition = parse_expression(PrecedenceLevel::Lowest);
 
     if (!expect_peek(TokenType::RightParen))
@@ -262,6 +265,7 @@ auto Parser::parse_if_expression() -> ast::ExprNodePtr
         consume();
         if (!expect_peek(TokenType::LeftBrace))
             return nullptr;
+
         alternative = parse_block_statement();
     }
 

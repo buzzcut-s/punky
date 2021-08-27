@@ -296,7 +296,7 @@ public:
 
     IfExpression(Token tok, ExprNodePtr condition,
                  std::unique_ptr<ast::BlockStmt> consequence,
-                 OptIfAltBlk                      alternative) :
+                 OptIfAltBlk                     alternative) :
       ExprNode{std::move(tok)},
       m_condition{std::move(condition)},
       m_consequence{std::move(consequence)},
@@ -308,7 +308,7 @@ public:
 private:
     ExprNodePtr                     m_condition;
     std::unique_ptr<ast::BlockStmt> m_consequence;
-    OptIfAltBlk                      m_alternative;
+    OptIfAltBlk                     m_alternative;
 };
 
 using OptCallArgs = std::optional<std::unique_ptr<ExprNodeVector>>;

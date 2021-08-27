@@ -80,10 +80,11 @@ private:
 
     auto parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr;
 
-    auto parse_identifier() -> ast::ExprNodePtr;
-    auto parse_int_literal() -> ast::ExprNodePtr;
     auto parse_prefix_expression() -> ast::ExprNodePtr;
     auto parse_infix_expression(ast::ExprNodePtr left_expr) -> ast::ExprNodePtr;
+
+    auto parse_identifier() -> ast::ExprNodePtr;
+    auto parse_int_literal() -> ast::ExprNodePtr;
     auto parse_boolean() -> ast::ExprNodePtr;
     auto parse_grouped_expression() -> ast::ExprNodePtr;
     auto parse_if_expression() -> ast::ExprNodePtr;
