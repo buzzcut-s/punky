@@ -16,8 +16,7 @@ using punky::tok::TokenType;
 using obj::Object;
 using obj::ObjectType;
 
-using punky::ast::ExprType;
-using punky::ast::StmtType;
+using punky::ast::AstType;
 
 Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
   m_root{std::move(prog)}
@@ -40,55 +39,37 @@ void Evaluator::print() const
 
 Object Evaluator::eval(ast::AstNode* node)
 {
-    if (node->ast_type() == ast::AstType::Stmt)
+    switch (node->ast_type())
     {
-        std::cout << "StmtAst\n";
-        switch (node->stmt()->stmt_type())
+        case AstType::ExpressionStmt:
+            std::cout << "ExprStmt\n";
+            return eval(node->expr_stmt()->expression());
+
+        case AstType::Int:
+            std::cout << "IntLit\n";
+            return Object{ObjectType::Int, node->int_lit()->value()};
+
+        case AstType::Bool:
+            std::cout << "Bool\n";
+            return Object{ObjectType::Boolean, node->boolean()->value()};
+
+        case AstType::Prefix:
         {
-            case StmtType::Expression:
-                std::cout << "ExprStmt\n";
-                return eval(node->expr_stmt()->expression());
-
-            default:
-                std::cout << "DefStmt\n";
-                return Object{ObjectType::Null, std::monostate{}};
+            const auto right = eval(node->prefix_expr()->right());
+            return eval_prefix_expr(node->expr()->type(), right);
         }
-    }
 
-    else if (node->ast_type() == ast::AstType::Expr)
-    {
-        std::cout << "ExprAst\n";
-        switch (node->expr()->expr_type())
+        case AstType::Infix:
         {
-            case ExprType::Int:
-                std::cout << "IntLit\n";
-                return Object{ObjectType::Int, node->int_lit()->value()};
-
-            case ExprType::Bool:
-                std::cout << "Bool\n";
-                return Object{ObjectType::Boolean, node->boolean()->value()};
-
-            case ExprType::Prefix:
-            {
-                const auto right = eval(node->prefix_expr()->right());
-                return eval_prefix_expr(node->expr()->type(), right);
-            }
-
-            case ExprType::Infix:
-            {
-                const auto left  = eval(node->infix_expr()->left());
-                const auto right = eval(node->infix_expr()->right());
-                return eval_infix_expr(node->expr()->type(), left, right);
-            }
-
-            default:
-                std::cout << "DefExpr\n";
-                return Object{ObjectType::Null, std::monostate{}};
+            const auto left  = eval(node->infix_expr()->left());
+            const auto right = eval(node->infix_expr()->right());
+            return eval_infix_expr(node->expr()->type(), left, right);
         }
-    }
 
-    std::cout << "WtfEven\n";
-    return Object{ObjectType::Null, std::monostate{}};
+        default:
+            std::cout << "DefExpr\n";
+            return Object{ObjectType::Null, std::monostate{}};
+    }
 }
 
 obj::Object Evaluator::eval_prefix_expr(const tok::TokenType& op, const Object& right)
