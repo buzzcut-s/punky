@@ -47,6 +47,8 @@ private:
                                const Object& left, const Object& right);
     Object eval_bool_infix_expr(const TokenType& op,
                                 const Object& left, const Object& right);
+
+    Object eval_if_expr(ast::IfExpression* if_expr);
 };
 
 }  // namespace punky::eval

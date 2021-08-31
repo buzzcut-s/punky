@@ -37,8 +37,10 @@ class IntLiteral;
 class Boolean;
 class PrefixExpression;
 class InfixExpression;
+class IfExpression;
 
 class ExpressionStmt;
+class BlockStmt;
 
 struct AstNode
 {
@@ -63,8 +65,10 @@ struct AstNode
     Boolean*          boolean();
     PrefixExpression* prefix_expr();
     InfixExpression*  infix_expr();
+    IfExpression*     if_expr();
 
     ExpressionStmt* expr_stmt();
+    BlockStmt*      block_stmt();
 };
 
 class ExprNode : public AstNode
@@ -273,7 +277,6 @@ public:
         return AstType::BlockStmt;
     }
 
-private:
     StmtNodeVector m_blk_statements;
 };
 
@@ -418,6 +421,14 @@ public:
     [[nodiscard]] AstType ast_type() const override
     {
         return AstType::If;
+    }
+
+    [[nodiscard]] ExprNode*  condition() const { return m_condition.get(); }
+    [[nodiscard]] BlockStmt* consequence() const { return m_consequence.get(); }
+
+    [[nodiscard]] BlockStmt* alternative() const
+    {
+        return m_alternative.has_value() ? m_alternative.value().get() : nullptr;
     }
 
 private:

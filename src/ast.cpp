@@ -20,6 +20,11 @@ ExpressionStmt* AstNode::expr_stmt()
     return static_cast<ExpressionStmt*>(this);
 }
 
+BlockStmt* AstNode::block_stmt()
+{
+    return static_cast<BlockStmt*>(this);
+}
+
 IntLiteral* AstNode::int_lit()
 {
     return static_cast<IntLiteral*>(this);
@@ -38,6 +43,11 @@ PrefixExpression* AstNode::prefix_expr()
 InfixExpression* AstNode::infix_expr()
 {
     return static_cast<InfixExpression*>(this);
+}
+
+IfExpression* AstNode::if_expr()
+{
+    return static_cast<IfExpression*>(this);
 }
 
 std::string ExprNode::token_literal() const

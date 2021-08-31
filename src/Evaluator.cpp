@@ -17,6 +17,8 @@ using punky::ast::AstType;
 using obj::Object;
 using obj::ObjectType;
 
+bool is_truthy(const Object& obj);
+
 Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
   m_program{std::move(prog)}
 {
@@ -42,6 +44,9 @@ Object Evaluator::eval(ast::AstNode* node)
         case AstType::ExpressionStmt:
             return eval(node->expr_stmt()->expression());
 
+        case AstType::BlockStmt:
+            return eval_statements(node->block_stmt()->m_blk_statements);
+
         case AstType::Int:
             return Object{ObjectType::Int, node->int_lit()->value()};
 
@@ -60,6 +65,9 @@ Object Evaluator::eval(ast::AstNode* node)
             const auto right = eval(node->infix_expr()->right());
             return eval_infix_expr(node->expr()->type(), left, right);
         }
+
+        case AstType::If:
+            return eval_if_expr(node->if_expr());
 
         default:
             return Object{ObjectType::Null, std::monostate{}};
@@ -169,6 +177,34 @@ obj::Object Evaluator::eval_bool_infix_expr(const tok::TokenType& op,
 
         default:
             return Object{ObjectType::Null, std::monostate{}};
+    }
+}
+
+Object Evaluator::eval_if_expr(ast::IfExpression* if_expr)
+{
+    auto condition = eval(if_expr->condition());
+
+    if (is_truthy(condition))
+        return eval(if_expr->consequence());
+
+    if (if_expr->alternative())
+        return eval(if_expr->alternative());
+
+    return Object{ObjectType::Null, std::monostate{}};
+}
+
+bool is_truthy(const Object& obj)
+{
+    switch (obj.m_type)
+    {
+        case ObjectType::Boolean:
+            return std::get<bool>(obj.m_value);
+
+        case ObjectType::Null:
+            return false;
+
+        default:
+            return true;
     }
 }
 
