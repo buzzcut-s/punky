@@ -41,12 +41,9 @@ private:
     Object eval_bang_prefix_expr(const Object& right);
     Object eval_minus_prefix_expr(const Object& right);
 
-    Object eval_infix_expr(const TokenType& op,
-                           const Object& left, const Object& right);
-    Object eval_int_infix_expr(const TokenType& op,
-                               const Object& left, const Object& right);
-    Object eval_bool_infix_expr(const TokenType& op,
-                                const Object& left, const Object& right);
+    Object eval_infix_expr(const TokenType& op, const Object& left, const Object& right);
+    Object eval_int_infix_expr(const TokenType& op, const Object& left, const Object& right);
+    Object eval_bool_infix_expr(const TokenType& op, const Object& left, const Object& right);
 
     Object eval_if_expr(ast::IfExpression* if_expr);
 };

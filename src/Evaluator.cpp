@@ -10,12 +10,10 @@
 namespace punky::eval
 {
 
-using punky::tok::TokenType;
-
 using punky::ast::AstType;
-
-using obj::Object;
-using obj::ObjectType;
+using punky::obj::Object;
+using punky::obj::ObjectType;
+using punky::tok::TokenType;
 
 bool is_truthy(const Object& obj);
 
@@ -74,7 +72,7 @@ Object Evaluator::eval(ast::AstNode* node)
     }
 }
 
-obj::Object Evaluator::eval_prefix_expr(const tok::TokenType& op, const Object& right)
+Object Evaluator::eval_prefix_expr(const tok::TokenType& op, const Object& right)
 {
     switch (op)
     {
@@ -89,7 +87,7 @@ obj::Object Evaluator::eval_prefix_expr(const tok::TokenType& op, const Object& 
     }
 }
 
-obj::Object Evaluator::eval_bang_prefix_expr(const Object& right)
+Object Evaluator::eval_bang_prefix_expr(const Object& right)
 {
     switch (right.m_type)
     {
@@ -104,7 +102,7 @@ obj::Object Evaluator::eval_bang_prefix_expr(const Object& right)
     }
 }
 
-obj::Object Evaluator::eval_minus_prefix_expr(const obj::Object& right)
+Object Evaluator::eval_minus_prefix_expr(const Object& right)
 {
     if (right.m_type == ObjectType::Int)
         return Object{ObjectType::Int, -std::get<int>(right.m_value)};
@@ -112,8 +110,8 @@ obj::Object Evaluator::eval_minus_prefix_expr(const obj::Object& right)
     return Object{ObjectType::Null, std::monostate{}};
 }
 
-obj::Object Evaluator::eval_infix_expr(const tok::TokenType& op,
-                                       const obj::Object& left, const obj::Object& right)
+Object Evaluator::eval_infix_expr(const tok::TokenType& op,
+                                  const Object& left, const Object& right)
 {
     if (left.m_type == ObjectType::Int && right.m_type == ObjectType::Int)
         return eval_int_infix_expr(op, left, right);
@@ -124,8 +122,8 @@ obj::Object Evaluator::eval_infix_expr(const tok::TokenType& op,
     return Object{ObjectType::Null, std::monostate{}};
 }
 
-obj::Object Evaluator::eval_int_infix_expr(const tok::TokenType& op,
-                                           const obj::Object& left, const obj::Object& right)
+Object Evaluator::eval_int_infix_expr(const tok::TokenType& op,
+                                      const Object& left, const Object& right)
 {
     const auto left_val  = std::get<int>(left.m_value);
     const auto right_val = std::get<int>(right.m_value);
@@ -161,8 +159,8 @@ obj::Object Evaluator::eval_int_infix_expr(const tok::TokenType& op,
     }
 }
 
-obj::Object Evaluator::eval_bool_infix_expr(const tok::TokenType& op,
-                                            const obj::Object& left, const obj::Object& right)
+Object Evaluator::eval_bool_infix_expr(const tok::TokenType& op,
+                                       const Object& left, const Object& right)
 {
     const auto left_val  = std::get<bool>(left.m_value);
     const auto right_val = std::get<bool>(right.m_value);
