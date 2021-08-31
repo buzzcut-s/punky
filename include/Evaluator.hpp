@@ -31,7 +31,9 @@ public:
     Object interpret();
 
 private:
-    std::unique_ptr<ast::Program> m_root;
+    std::unique_ptr<ast::Program> m_program;
+
+    Object eval_statements(const ast::StmtNodeVector& stmts);
 
     Object eval(ast::AstNode* node);
 

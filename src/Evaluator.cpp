@@ -18,17 +18,23 @@ using obj::Object;
 using obj::ObjectType;
 
 Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
-  m_root{std::move(prog)}
+  m_program{std::move(prog)}
 {
 }
 
 Object Evaluator::interpret()
 {
+    return eval_statements(m_program->m_statements);
+}
+
+Object Evaluator::eval_statements(const ast::StmtNodeVector& stmts)
+{
     Object result{};
-    for (const auto& stmt : m_root->m_statements)
+    for (const auto& stmt : stmts)
         result = eval(stmt.get());
     return result;
 }
+
 Object Evaluator::eval(ast::AstNode* node)
 {
     switch (node->ast_type())
