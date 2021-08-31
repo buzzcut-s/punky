@@ -1,6 +1,5 @@
 #include "../include/Evaluator.hpp"
 
-#include <iostream>
 #include <memory>
 #include <utility>
 
@@ -13,10 +12,10 @@ namespace punky::eval
 
 using punky::tok::TokenType;
 
+using punky::ast::AstType;
+
 using obj::Object;
 using obj::ObjectType;
-
-using punky::ast::AstType;
 
 Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
   m_root{std::move(prog)}
@@ -30,27 +29,17 @@ Object Evaluator::interpret()
         result = eval(stmt.get());
     return result;
 }
-
-void Evaluator::print() const
-{
-    if (m_root)
-        std::cout << m_root->to_string();
-}
-
 Object Evaluator::eval(ast::AstNode* node)
 {
     switch (node->ast_type())
     {
         case AstType::ExpressionStmt:
-            std::cout << "ExprStmt\n";
             return eval(node->expr_stmt()->expression());
 
         case AstType::Int:
-            std::cout << "IntLit\n";
             return Object{ObjectType::Int, node->int_lit()->value()};
 
         case AstType::Bool:
-            std::cout << "Bool\n";
             return Object{ObjectType::Boolean, node->boolean()->value()};
 
         case AstType::Prefix:
@@ -67,7 +56,6 @@ Object Evaluator::eval(ast::AstNode* node)
         }
 
         default:
-            std::cout << "DefExpr\n";
             return Object{ObjectType::Null, std::monostate{}};
     }
 }

@@ -30,8 +30,6 @@ public:
 
     Object interpret();
 
-    void print() const;
-
 private:
     std::unique_ptr<ast::Program> m_root;
 
@@ -48,6 +46,7 @@ private:
     Object eval_bool_infix_expr(const TokenType& op,
                                 const Object& left, const Object& right);
 };
+
 }  // namespace punky::eval
 
 #endif  // EVALUATOR_HPP

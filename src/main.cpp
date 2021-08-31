@@ -27,8 +27,10 @@ int main()
             continue;
         }
 
+        if (prog)
+            std::cout << prog->to_string();
+
         auto eval = punky::eval::Evaluator{std::move(prog)};
-        // eval.print();
 
         auto res = eval.interpret();
 
