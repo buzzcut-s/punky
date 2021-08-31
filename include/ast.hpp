@@ -13,6 +13,23 @@ namespace punky::ast
 
 using punky::tok::Token;
 
+enum class AstType
+{
+    Expr,
+    Stmt,
+    Prog
+};
+
+class ExprNode;
+class StmtNode;
+
+class IntLiteral;
+class Boolean;
+class PrefixExpression;
+class InfixExpression;
+
+class ExpressionStmt;
+
 struct AstNode
 {
     AstNode()                     = default;
@@ -24,6 +41,32 @@ struct AstNode
 
     [[nodiscard]] virtual std::string token_literal() const = 0;
     [[nodiscard]] virtual std::string to_string() const     = 0;
+
+    [[nodiscard]] virtual AstType ast_type() const = 0;
+
+    [[nodiscard]] virtual tok::TokenType type() const = 0;
+
+    ExprNode* expr();
+    StmtNode* stmt();
+
+    IntLiteral*       int_lit();
+    Boolean*          boolean();
+    PrefixExpression* prefix_expr();
+    InfixExpression*  infix_expr();
+
+    ExpressionStmt* expr_stmt();
+};
+
+enum class ExprType
+{
+    Identifier,
+    Int,
+    Prefix,
+    Infix,
+    Bool,
+    If,
+    Call,
+    Function
 };
 
 class ExprNode : public AstNode
@@ -43,12 +86,29 @@ public:
     [[nodiscard]] std::string token_literal() const final;
     [[nodiscard]] std::string to_string() const override = 0;
 
+    [[nodiscard]] AstType ast_type() const final
+    {
+        return AstType::Expr;
+    }
+
+    [[nodiscard]] tok::TokenType type() const final { return m_token.m_type; }
+
+    [[nodiscard]] virtual ExprType expr_type() const = 0;
+
 private:
     Token m_token;
 };
 
 using ExprNodePtr    = std::unique_ptr<ast::ExprNode>;
 using ExprNodeVector = std::vector<ExprNodePtr>;
+
+enum class StmtType
+{
+    Let,
+    Return,
+    Expression,
+    Block
+};
 
 class StmtNode : public AstNode
 {
@@ -67,6 +127,15 @@ public:
     [[nodiscard]] std::string token_literal() const final;
     [[nodiscard]] std::string to_string() const override = 0;
 
+    [[nodiscard]] AstType ast_type() const final
+    {
+        return AstType::Stmt;
+    }
+
+    [[nodiscard]] tok::TokenType type() const final { return m_token.m_type; }
+
+    [[nodiscard]] virtual StmtType stmt_type() const = 0;
+
 private:
     Token m_token;
 };
@@ -74,9 +143,8 @@ private:
 using StmtNodePtr    = std::unique_ptr<ast::StmtNode>;
 using StmtNodeVector = std::vector<StmtNodePtr>;
 
-class Program : public AstNode
+struct Program : public AstNode
 {
-public:
     Program()                     = default;
     Program(Program const& other) = delete;
     Program& operator=(Program const& other) = delete;
@@ -87,9 +155,15 @@ public:
     [[nodiscard]] std::string token_literal() const override;
     [[nodiscard]] std::string to_string() const override;
 
+    [[nodiscard]] AstType ast_type() const final
+    {
+        return AstType::Prog;
+    }
+
     void push_stmt(std::unique_ptr<ast::StmtNode> stmt);
 
-private:
+    [[nodiscard]] tok::TokenType type() const final { return tok::TokenType::Illegal; }
+
     StmtNodeVector m_statements;
 };
 
@@ -107,6 +181,11 @@ struct Identifier : public ExprNode
     {}
 
     [[nodiscard]] std::string to_string() const override;
+
+    [[nodiscard]] ExprType expr_type() const override
+    {
+        return ExprType::Identifier;
+    }
 };
 
 class LetStmt : public StmtNode
@@ -126,6 +205,11 @@ public:
     {}
 
     [[nodiscard]] std::string to_string() const override;
+
+    [[nodiscard]] StmtType stmt_type() const override
+    {
+        return StmtType::Let;
+    }
 
 private:
     Identifier  m_name;
@@ -149,6 +233,11 @@ public:
 
     [[nodiscard]] std::string to_string() const override;
 
+    [[nodiscard]] StmtType stmt_type() const override
+    {
+        return StmtType::Return;
+    }
+
 private:
     ExprNodePtr m_ret_value;
 };
@@ -169,6 +258,13 @@ public:
     {}
 
     [[nodiscard]] std::string to_string() const override;
+
+    [[nodiscard]] StmtType stmt_type() const override
+    {
+        return StmtType::Expression;
+    }
+
+    [[nodiscard]] ExprNode* expression() const { return m_expression.get(); }
 
 private:
     ExprNodePtr m_expression;
@@ -192,6 +288,11 @@ public:
 
     [[nodiscard]] std::string to_string() const override;
 
+    [[nodiscard]] StmtType stmt_type() const override
+    {
+        return StmtType::Block;
+    }
+
 private:
     StmtNodeVector m_blk_statements;
 };
@@ -213,6 +314,13 @@ public:
 
     [[nodiscard]] std::string to_string() const override;
 
+    [[nodiscard]] ExprType expr_type() const override
+    {
+        return ExprType::Int;
+    }
+
+    [[nodiscard]] int value() const { return m_int_value; }
+
 private:
     int m_int_value;
 };
@@ -233,6 +341,13 @@ public:
     {}
 
     [[nodiscard]] std::string to_string() const override;
+
+    [[nodiscard]] ExprType expr_type() const override
+    {
+        return ExprType::Prefix;
+    }
+
+    [[nodiscard]] ExprNode* right() const { return m_right.get(); }
 
 private:
     ExprNodePtr m_right;
@@ -256,6 +371,14 @@ public:
 
     [[nodiscard]] std::string to_string() const override;
 
+    [[nodiscard]] ExprType expr_type() const override
+    {
+        return ExprType::Infix;
+    }
+
+    [[nodiscard]] ExprNode* left() const { return m_left.get(); }
+    [[nodiscard]] ExprNode* right() const { return m_right.get(); }
+
 private:
     ExprNodePtr m_left;
     ExprNodePtr m_right;
@@ -277,6 +400,13 @@ public:
     {}
 
     [[nodiscard]] std::string to_string() const override;
+
+    [[nodiscard]] ExprType expr_type() const override
+    {
+        return ExprType::Bool;
+    }
+
+    [[nodiscard]] bool value() const { return m_bool_value; }
 
 private:
     bool m_bool_value;
@@ -305,6 +435,11 @@ public:
 
     [[nodiscard]] std::string to_string() const override;
 
+    [[nodiscard]] ExprType expr_type() const override
+    {
+        return ExprType::If;
+    }
+
 private:
     ExprNodePtr                     m_condition;
     std::unique_ptr<ast::BlockStmt> m_consequence;
@@ -332,6 +467,11 @@ public:
 
     [[nodiscard]] std::string to_string() const override;
 
+    [[nodiscard]] ExprType expr_type() const override
+    {
+        return ExprType::Call;
+    }
+
 private:
     ExprNodePtr m_function;
     OptCallArgs m_arguments;
@@ -357,6 +497,11 @@ public:
     {}
 
     [[nodiscard]] std::string to_string() const override;
+
+    [[nodiscard]] ExprType expr_type() const override
+    {
+        return ExprType::Function;
+    }
 
 private:
     OptFnParams m_params;

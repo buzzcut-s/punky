@@ -5,6 +5,41 @@
 namespace punky::ast
 {
 
+ExprNode* AstNode::expr()
+{
+    return static_cast<ExprNode*>(this);
+}
+
+StmtNode* AstNode::stmt()
+{
+    return static_cast<StmtNode*>(this);
+}
+
+ExpressionStmt* AstNode::expr_stmt()
+{
+    return static_cast<ExpressionStmt*>(this);
+}
+
+IntLiteral* AstNode::int_lit()
+{
+    return static_cast<IntLiteral*>(this);
+}
+
+Boolean* AstNode::boolean()
+{
+    return static_cast<Boolean*>(this);
+}
+
+PrefixExpression* AstNode::prefix_expr()
+{
+    return static_cast<PrefixExpression*>(this);
+}
+
+InfixExpression* AstNode::infix_expr()
+{
+    return static_cast<InfixExpression*>(this);
+}
+
 std::string ExprNode::token_literal() const
 {
     return m_token.m_literal.has_value() ? m_token.m_literal.value()
