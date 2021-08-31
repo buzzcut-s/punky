@@ -1,7 +1,9 @@
 #include <iostream>
 #include <string>
 
+#include "../include/Evaluator.hpp"
 #include "../include/Lexer.hpp"
+#include "../include/Object.hpp"
 #include "../include/Parser.hpp"
 #include "../include/ast.hpp"
 #include "../include/readline.hpp"
@@ -25,8 +27,12 @@ int main()
             continue;
         }
 
-        if (prog)
-            std::cout << prog->to_string();
+        auto eval = punky::eval::Evaluator{std::move(prog)};
+        // eval.print();
+
+        auto res = eval.interpret();
+
+        std::cout << punky::obj::inspect(res) << std::endl;
     }
 
     return 0;
