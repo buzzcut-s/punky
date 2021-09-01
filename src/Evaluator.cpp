@@ -275,10 +275,9 @@ Object Evaluator::eval_if_expr(const ast::IfExpression& if_expr, env::Environmen
     return M_NULL_OBJ;
 }
 
-Object Evaluator::eval_identifier(const ast::Identifier& ident, env::Environment& env)
+Object Evaluator::eval_identifier(const ast::Identifier& ident, const env::Environment& env)
 {
-    auto val = env.get(ident.name());
-    if (val.has_value())
+    if (auto val = env.get(ident.name()); val.has_value())
         return val.value();
     return unknown_ident_error(ident);
 }

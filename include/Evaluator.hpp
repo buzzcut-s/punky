@@ -57,7 +57,7 @@ private:
     static Object eval_bool_infix_expr(const TokenType& op, const Object& left, const Object& right);
 
     static Object eval_if_expr(const ast::IfExpression& if_expr, env::Environment& env);
-    static Object eval_identifier(const ast::Identifier& ident, env::Environment& env);
+    static Object eval_identifier(const ast::Identifier& ident, const env::Environment& env);
 
     static std::vector<Object> eval_expressions(const Expressions& exprs, env::Environment& env);
 
