@@ -7,14 +7,18 @@ Checks: >
   cppcoreguidelines-*,  
   google-*,
   hicpp-*,
+
   misc-*,
-  
+  -misc-no-recursion,
+
   modernize-*,
   -modernize-use-trailing-return-type,
-  
-  performance-*,  
+
+  performance-*,
+
   readability-*,
-  
+  -readability-identifier-length,
+
 AnalyzeTemporaryDtors: false
 FormatStyle:     file
 User:            piyush
