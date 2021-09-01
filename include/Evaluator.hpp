@@ -29,7 +29,7 @@ class Evaluator
 public:
     explicit Evaluator(std::unique_ptr<ast::Program> prog);
 
-    [[nodiscard]] Object interpret() const;
+    [[nodiscard]] Object interpret(env::Environment& env) const;
 
 private:
     std::unique_ptr<ast::Program> m_program;
@@ -38,7 +38,7 @@ private:
     static const Object M_FALSE_OBJ;
     static const Object M_NULL_OBJ;
 
-    [[nodiscard]] Object eval_program() const;
+    [[nodiscard]] Object eval_program(env::Environment& env) const;
 
     static Object eval(const ast::AstNode& node, env::Environment& env);
 

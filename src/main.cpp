@@ -1,6 +1,8 @@
 #include <iostream>
+#include <memory>
 #include <string>
 
+#include "../include/Environment.hpp"
 #include "../include/Evaluator.hpp"
 #include "../include/Lexer.hpp"
 #include "../include/Object.hpp"
@@ -10,6 +12,8 @@
 
 int main()
 {
+    auto env = std::make_unique<punky::env::Environment>();
+
     std::string line;
     while (readline::read(line))
     {
@@ -33,7 +37,7 @@ int main()
 
         auto eval = punky::eval::Evaluator{std::move(prog)};
 
-        auto res = eval.interpret();
+        auto res = eval.interpret(*env);
 
         std::cout << "result inspect:\n";
         std::cout << punky::obj::inspect(res) << std::endl;

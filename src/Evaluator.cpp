@@ -34,19 +34,17 @@ Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
 {
 }
 
-Object Evaluator::interpret() const
+Object Evaluator::interpret(env::Environment& env) const
 {
-    return eval_program();
+    return eval_program(env);
 }
 
-Object Evaluator::eval_program() const
+Object Evaluator::eval_program(env::Environment& env) const
 {
-    auto env = std::make_unique<env::Environment>();
-
     Object result{};
     for (const auto& stmt : m_program->statements())
     {
-        result = eval(*stmt, *env);
+        result = eval(*stmt, env);
 
         if (result.m_type == ObjectType::Return)
             return std::any_cast<Object>(std::get<std::any>(result.m_value));
