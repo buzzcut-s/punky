@@ -3,24 +3,19 @@
 
 #include <memory>
 
+#include "Object.hpp"
 #include "ast.hpp"
 
-namespace punky
-{
-namespace obj
-{
-struct Object;
-}
-namespace tok
+namespace punky::tok
 {
 enum class TokenType;
 }
-}  // namespace punky
 
 namespace punky::eval
 {
 
 using punky::obj::Object;
+using punky::obj::ObjectType;
 using punky::tok::TokenType;
 
 class Evaluator
@@ -32,6 +27,10 @@ public:
 
 private:
     std::unique_ptr<ast::Program> m_program;
+
+    const Object m_true_obj  = Object{ObjectType::Boolean, true};
+    const Object m_false_obj = Object{ObjectType::Boolean, false};
+    const Object m_null_obj  = Object{ObjectType::Null, std::monostate{}};
 
     Object eval_program();
 

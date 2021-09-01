@@ -96,7 +96,7 @@ Object Evaluator::eval(const ast::AstNode& node)
             return eval_if_expr(*node.if_expr());
 
         default:
-            return Object{ObjectType::Null, std::monostate{}};
+            return m_null_obj;
     }
 }
 
@@ -136,10 +136,10 @@ Object Evaluator::eval_bang_prefix_expr(const Object& right)
             return Object{ObjectType::Boolean, !std::get<bool>(right.m_value)};
 
         case ObjectType::Null:
-            return Object{ObjectType::Boolean, true};
+            return m_true_obj;
 
         default:
-            return Object{ObjectType::Boolean, false};
+            return m_false_obj;
     }
 }
 
@@ -232,7 +232,7 @@ Object Evaluator::eval_if_expr(const ast::IfExpression& if_expr)
     if (if_expr.alternative())
         return eval(*if_expr.alternative());
 
-    return Object{ObjectType::Null, std::monostate{}};
+    return m_null_obj;
 }
 
 bool is_truthy(const Object& obj)
