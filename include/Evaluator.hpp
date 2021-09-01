@@ -22,9 +22,10 @@ class Environment;
 namespace punky::eval
 {
 
-using punky::obj::FunctionObject;
 using punky::obj::Object;
 using punky::tok::TokenType;
+
+using ObjectVector = std::vector<Object>;
 
 class Evaluator
 {
@@ -57,12 +58,9 @@ private:
     static Object eval_if_expr(const ast::IfExpression& if_expr, env::Environment& env);
     static Object eval_identifier(const ast::Identifier& ident, const env::Environment& env);
 
-    static std::vector<Object> eval_expressions(const ast::Arguments& exprs, env::Environment& env);
+    static ObjectVector eval_expressions(const ast::Arguments& exprs, env::Environment& env);
 
-    static Object apply_function(const Object& fn, const std::vector<Object>& args);
-
-    static std::unique_ptr<env::Environment> extend_fn_env(const FunctionObject&      fn_obj,
-                                                           const std::vector<Object>& args);
+    static Object apply_function(const Object& fn, const ObjectVector& args);
 };
 
 }  // namespace punky::eval

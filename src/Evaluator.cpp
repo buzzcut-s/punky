@@ -32,6 +32,9 @@ static Object type_mismatch_error(const TokenType& op, const Object& left, const
 static Object unknown_ident_error(const ast::Identifier& ident);
 static Object not_fn_error(const Object& not_fn);
 
+static std::unique_ptr<env::Environment> extend_fn_env(const FunctionObject&      fn_obj,
+                                                       const std::vector<Object>& args);
+
 Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
   m_program{std::move(prog)}
 {
@@ -300,7 +303,7 @@ std::vector<Object> Evaluator::eval_expressions(const ast::Arguments& exprs, env
     return {};
 }
 
-Object Evaluator::apply_function(const Object& fn, const std::vector<Object>& args)
+Object Evaluator::apply_function(const Object& fn, const ObjectVector& args)
 {
     if (fn.m_type == ObjectType::Function)
     {
@@ -312,8 +315,8 @@ Object Evaluator::apply_function(const Object& fn, const std::vector<Object>& ar
     return not_fn_error(fn);
 }
 
-std::unique_ptr<env::Environment> Evaluator::extend_fn_env(const FunctionObject&      fn_obj,
-                                                           const std::vector<Object>& args)
+static std::unique_ptr<env::Environment> extend_fn_env(const FunctionObject&      fn_obj,
+                                                       const std::vector<Object>& args)
 {
     auto fn_env = std::make_unique<env::Environment>(fn_obj.env());
 
