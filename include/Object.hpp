@@ -5,6 +5,8 @@
 #include <string>
 #include <variant>
 
+#include "FObject.hpp"
+
 namespace punky::obj
 {
 
@@ -15,10 +17,16 @@ enum class ObjectType
     Boolean,
     Return,
     Error,
+    Function,
     EmptyOut
 };
 
-using ValVariant = std::variant<std::monostate, int, bool, std::any, std::string>;
+using ValVariant = std::variant<std::monostate,
+                                int,
+                                bool,
+                                std::any,
+                                std::string,
+                                FunctionObject>;
 
 struct Object
 {
