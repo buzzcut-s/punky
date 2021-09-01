@@ -15,16 +15,6 @@ StmtNode* AstNode::stmt()
     return static_cast<StmtNode*>(this);
 }
 
-ExpressionStmt* AstNode::expr_stmt()
-{
-    return static_cast<ExpressionStmt*>(this);
-}
-
-BlockStmt* AstNode::block_stmt()
-{
-    return static_cast<BlockStmt*>(this);
-}
-
 IntLiteral* AstNode::int_lit()
 {
     return static_cast<IntLiteral*>(this);
@@ -48,6 +38,21 @@ InfixExpression* AstNode::infix_expr()
 IfExpression* AstNode::if_expr()
 {
     return static_cast<IfExpression*>(this);
+}
+
+ExpressionStmt* AstNode::expr_stmt()
+{
+    return static_cast<ExpressionStmt*>(this);
+}
+
+BlockStmt* AstNode::block_stmt()
+{
+    return static_cast<BlockStmt*>(this);
+}
+
+ReturnStmt* AstNode::return_stmt()
+{
+    return static_cast<ReturnStmt*>(this);
 }
 
 std::string ExprNode::token_literal() const
@@ -94,8 +99,8 @@ std::string Identifier::to_string() const
 
 std::string ReturnStmt::to_string() const
 {
-    return m_ret_value ? token_literal() + " " + m_ret_value->to_string()
-                       : token_literal() + " ";
+    return m_ret_expr ? token_literal() + " " + m_ret_expr->to_string()
+                      : token_literal() + " ";
 }
 
 std::string ExpressionStmt::to_string() const

@@ -24,14 +24,19 @@ Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
 
 Object Evaluator::interpret()
 {
-    return eval_statements(m_program->m_statements);
+    return eval_program();
 }
 
-Object Evaluator::eval_statements(const ast::StmtNodeVector& stmts)
+Object Evaluator::eval_program()
 {
     Object result{};
-    for (const auto& stmt : stmts)
+    for (const auto& stmt : m_program->m_statements)
+    {
         result = eval(stmt.get());
+
+        if (result.m_type == ObjectType::Return)
+            return std::any_cast<Object>(std::get<std::any>(result.m_value));
+    }
     return result;
 }
 
@@ -43,7 +48,13 @@ Object Evaluator::eval(ast::AstNode* node)
             return eval(node->expr_stmt()->expression());
 
         case AstType::BlockStmt:
-            return eval_statements(node->block_stmt()->m_blk_statements);
+            return eval_block_statements(node->block_stmt()->m_blk_statements);
+
+        case AstType::ReturnStmt:
+        {
+            auto val = eval(node->return_stmt()->ret_expr());
+            return Object{ObjectType::Return, val};
+        }
 
         case AstType::Int:
             return Object{ObjectType::Int, node->int_lit()->value()};
@@ -70,6 +81,19 @@ Object Evaluator::eval(ast::AstNode* node)
         default:
             return Object{ObjectType::Null, std::monostate{}};
     }
+}
+
+Object Evaluator::eval_block_statements(const ast::StmtNodeVector& block)
+{
+    Object result{};
+    for (const auto& stmt : block)
+    {
+        result = eval(stmt.get());
+
+        if (result.m_type == ObjectType::Return)
+            return result;
+    }
+    return result;
 }
 
 Object Evaluator::eval_prefix_expr(const tok::TokenType& op, const Object& right)

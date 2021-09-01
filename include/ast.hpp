@@ -41,6 +41,7 @@ class IfExpression;
 
 class ExpressionStmt;
 class BlockStmt;
+class ReturnStmt;
 
 struct AstNode
 {
@@ -69,6 +70,7 @@ struct AstNode
 
     ExpressionStmt* expr_stmt();
     BlockStmt*      block_stmt();
+    ReturnStmt*     return_stmt();
 };
 
 class ExprNode : public AstNode
@@ -212,7 +214,7 @@ public:
 
     ReturnStmt(Token tok, ExprNodePtr ret_value) :
       StmtNode{std::move(tok)},
-      m_ret_value{std::move(ret_value)}
+      m_ret_expr{std::move(ret_value)}
     {}
 
     [[nodiscard]] std::string to_string() const override;
@@ -222,8 +224,10 @@ public:
         return AstType::ReturnStmt;
     }
 
+    [[nodiscard]] ExprNode* ret_expr() const { return m_ret_expr.get(); }
+
 private:
-    ExprNodePtr m_ret_value;
+    ExprNodePtr m_ret_expr;
 };
 
 class ExpressionStmt : public StmtNode

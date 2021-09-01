@@ -1,5 +1,6 @@
 #include "../include/Object.hpp"
 
+#include <any>
 #include <string>
 #include <variant>
 
@@ -15,6 +16,9 @@ std::string inspect(const Object& obj)
 
         case ObjectType::Boolean:
             return std::get<bool>(obj.m_value) ? "true" : "false";
+
+        case ObjectType::Return:
+            return inspect(std::any_cast<Object>(obj));
 
         case ObjectType::Null:
             return "null";

@@ -27,6 +27,7 @@ int main()
             continue;
         }
 
+        std::cout << "ast print:\n";
         if (prog)
             std::cout << prog->to_string();
 
@@ -34,6 +35,7 @@ int main()
 
         auto res = eval.interpret();
 
+        std::cout << "result inspect:\n";
         std::cout << punky::obj::inspect(res) << std::endl;
     }
 

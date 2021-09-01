@@ -33,9 +33,11 @@ public:
 private:
     std::unique_ptr<ast::Program> m_program;
 
-    Object eval_statements(const ast::StmtNodeVector& stmts);
+    Object eval_program();
 
     Object eval(ast::AstNode* node);
+
+    Object eval_block_statements(const ast::StmtNodeVector& block);
 
     Object eval_prefix_expr(const TokenType& op, const Object& right);
     Object eval_bang_prefix_expr(const Object& right);
