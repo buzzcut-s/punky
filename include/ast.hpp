@@ -57,8 +57,6 @@ struct AstNode
 
     [[nodiscard]] virtual AstType ast_type() const = 0;
 
-    [[nodiscard]] virtual tok::TokenType type() const = 0;
-
     [[nodiscard]] const ExprNode* expr() const;
     [[nodiscard]] const StmtNode* stmt() const;
 
@@ -92,7 +90,7 @@ public:
 
     [[nodiscard]] AstType ast_type() const override = 0;
 
-    [[nodiscard]] tok::TokenType type() const final { return m_token.m_type; }
+    [[nodiscard]] tok::TokenType type() const { return m_token.m_type; }
 
 private:
     Token m_token;
@@ -120,7 +118,7 @@ public:
 
     [[nodiscard]] AstType ast_type() const override = 0;
 
-    [[nodiscard]] tok::TokenType type() const final { return m_token.m_type; }
+    [[nodiscard]] tok::TokenType type() const { return m_token.m_type; }
 
 private:
     Token m_token;
@@ -148,8 +146,6 @@ public:
     }
 
     void push_stmt(std::unique_ptr<ast::StmtNode> stmt);
-
-    [[nodiscard]] tok::TokenType type() const final { return tok::TokenType::Illegal; }
 
     StmtNodeVector& statements() { return m_statements; }
 
