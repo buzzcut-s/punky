@@ -18,4 +18,5 @@ add_executable(
   src/ast.cpp
   src/Parser.cpp
   src/Object.cpp
-  src/Evaluator.cpp)
+  src/Evaluator.cpp
+  src/Environment.cpp)
