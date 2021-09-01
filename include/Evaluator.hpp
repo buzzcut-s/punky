@@ -22,6 +22,7 @@ class Environment;
 namespace punky::eval
 {
 
+using punky::obj::FunctionObject;
 using punky::obj::Object;
 using punky::tok::TokenType;
 
@@ -62,7 +63,8 @@ private:
 
     static Object apply_function(const Object& fn, const std::vector<Object>& args);
 
-    static std::unique_ptr<env::Environment> extend_fn_env(const Object& fn, std::vector<Object>& args);
+    static std::unique_ptr<env::Environment> extend_fn_env(const FunctionObject&      fn_obj,
+                                                           const std::vector<Object>& args);
 };
 
 }  // namespace punky::eval

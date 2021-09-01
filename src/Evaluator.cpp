@@ -301,21 +301,27 @@ Object Evaluator::apply_function(const Object& fn, const std::vector<Object>& ar
 {
     if (fn.m_type == ObjectType::Function)
     {
-        auto f_obj  = std::get<FunctionObject>(fn.m_value);
-        auto fn_env = std::make_unique<env::Environment>(f_obj.env());
-
-        size_t      i = 0;
-        const auto& f = *f_obj.fn();
-
-        for (const auto& param : *f.fn_lit()->params())
-        {
-            fn_env->set(param.name(), args[i++]);
-        }
-
-        auto value = eval(*f_obj.fn()->fn_lit()->body(), *fn_env);
+        auto fn_obj = std::get<FunctionObject>(fn.m_value);
+        auto fn_env = extend_fn_env(fn_obj, args);
+        auto value  = eval(*fn_obj.fn()->fn_lit()->body(), *fn_env);
         return value;
     }
     return not_fn_error(fn);
+}
+
+std::unique_ptr<env::Environment> Evaluator::extend_fn_env(const FunctionObject&      fn_obj,
+                                                           const std::vector<Object>& args)
+{
+    auto fn_env = std::make_unique<env::Environment>(fn_obj.env());
+
+    const auto& f = *fn_obj.fn();  // Step into this to check if m_fn member is deleted.
+
+    size_t i = 0;
+    for (const auto& param : *f.fn_lit()->params())
+    {
+        fn_env->set(param.name(), args[i++]);
+    }
+    return fn_env;
 }
 
 static bool is_truthy(const Object& obj)
