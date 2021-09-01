@@ -128,7 +128,7 @@ Object Evaluator::eval(const ast::AstNode& node, env::Environment& env)
             if (is_error(fn))
                 return fn;
 
-            auto args = eval_expressions(*node.call_expr()->arguments(), env);
+            auto args = eval_expressions(node.call_expr()->arguments(), env);
             if (args.size() == 1 && is_error(args.front()))
                 return args.front();
 
@@ -282,18 +282,22 @@ Object Evaluator::eval_identifier(const ast::Identifier& ident, const env::Envir
     return unknown_ident_error(ident);
 }
 
-std::vector<Object> Evaluator::eval_expressions(const Expressions& exprs, env::Environment& env)
+std::vector<Object> Evaluator::eval_expressions(const ast::Arguments& exprs, env::Environment& env)
 {
-    std::vector<Object> result;
-    for (const auto& expr : exprs)
+    if (exprs.has_value())
     {
-        auto evaluated = eval(*expr, env);
-        if (is_error(evaluated))
-            return std::vector<Object>{evaluated};
+        std::vector<Object> result;
+        for (const auto& expr : *exprs.value())
+        {
+            auto evaluated = eval(*expr, env);
+            if (is_error(evaluated))
+                return std::vector<Object>{evaluated};
 
-        result.push_back(evaluated);
+            result.push_back(evaluated);
+        }
+        return result;
     }
-    return result;
+    return {};
 }
 
 Object Evaluator::apply_function(const Object& fn, const std::vector<Object>& args)
@@ -313,12 +317,14 @@ std::unique_ptr<env::Environment> Evaluator::extend_fn_env(const FunctionObject&
 {
     auto fn_env = std::make_unique<env::Environment>(fn_obj.env());
 
-    const auto& f = *fn_obj.fn();  // Step into this to check if m_fn member is deleted.
-
-    size_t i = 0;
-    for (const auto& param : *f.fn_lit()->params())
+    const auto& node = *fn_obj.fn();  // Step into this to check if m_fn member is deleted.
+    if (auto params = node.fn_lit()->params(); params.has_value())
     {
-        fn_env->set(param.name(), args[i++]);
+        size_t i = 0;
+        for (const auto& param : *params.value())
+        {
+            fn_env->set(param.name(), args[i++]);
+        }
     }
     return fn_env;
 }

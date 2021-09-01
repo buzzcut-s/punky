@@ -34,8 +34,6 @@ public:
     [[nodiscard]] Object interpret(env::Environment& env) const;
 
 private:
-    using Expressions = std::vector<std::unique_ptr<punky::ast::ExprNode>>;
-
     std::unique_ptr<ast::Program> m_program;
 
     static const Object M_TRUE_OBJ;
@@ -59,7 +57,7 @@ private:
     static Object eval_if_expr(const ast::IfExpression& if_expr, env::Environment& env);
     static Object eval_identifier(const ast::Identifier& ident, const env::Environment& env);
 
-    static std::vector<Object> eval_expressions(const Expressions& exprs, env::Environment& env);
+    static std::vector<Object> eval_expressions(const ast::Arguments& exprs, env::Environment& env);
 
     static Object apply_function(const Object& fn, const std::vector<Object>& args);
 

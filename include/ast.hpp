@@ -464,6 +464,7 @@ private:
 };
 
 using OptCallArgs = std::optional<std::unique_ptr<ExprNodeVector>>;
+using Arguments   = std::optional<ExprNodeVector*>;
 
 class CallExpression : public ExprNode
 {
@@ -491,10 +492,7 @@ public:
 
     [[nodiscard]] ExprNode* function() const { return m_function.get(); }
 
-    [[nodiscard]] std::vector<std::unique_ptr<ExprNode>>* arguments() const
-    {
-        return m_arguments.has_value() ? m_arguments.value().get() : nullptr;
-    }
+    [[nodiscard]] std::optional<ExprNodeVector*> arguments() const;
 
 private:
     ExprNodePtr m_function;
@@ -529,10 +527,7 @@ public:
 
     [[nodiscard]] StmtNode* body() const { return m_body.get(); }
 
-    [[nodiscard]] std::vector<Identifier>* params() const
-    {
-        return m_params.has_value() ? m_params.value().get() : nullptr;
-    }
+    [[nodiscard]] std::optional<std::vector<punky::ast::Identifier>*> params() const;
 
 private:
     OptFnParams m_params;

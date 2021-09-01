@@ -205,6 +205,13 @@ std::string CallExpression::to_string() const
     return call_str;
 }
 
+std::optional<std::vector<std::unique_ptr<ExprNode>>*> CallExpression::arguments() const
+{
+    if (m_arguments.has_value())
+        return m_arguments.value().get();
+    return std::nullopt;
+}
+
 std::string FunctionLiteral::to_string() const
 {
     std::string fn_str{token_literal() + "("};
@@ -226,6 +233,13 @@ std::string FunctionLiteral::to_string() const
             fn_str.append(") " + m_body->to_string());
     }
     return fn_str;
+}
+
+std::optional<std::vector<punky::ast::Identifier>*> FunctionLiteral::params() const
+{
+    if (m_params.has_value())
+        return m_params.value().get();
+    return std::nullopt;
 }
 
 }  // namespace punky::ast
