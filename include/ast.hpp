@@ -39,6 +39,8 @@ class Boolean;
 class PrefixExpression;
 class InfixExpression;
 class IfExpression;
+class FunctionLiteral;
+class CallExpression;
 
 class ExpressionStmt;
 class BlockStmt;
@@ -68,6 +70,8 @@ struct AstNode
     [[nodiscard]] const PrefixExpression* prefix_expr() const;
     [[nodiscard]] const InfixExpression*  infix_expr() const;
     [[nodiscard]] const IfExpression*     if_expr() const;
+    [[nodiscard]] const FunctionLiteral*  fn_lit() const;
+    [[nodiscard]] const CallExpression*   call_expr() const;
 
     [[nodiscard]] const ExpressionStmt* expr_stmt() const;
     [[nodiscard]] const BlockStmt*      block_stmt() const;
@@ -485,6 +489,13 @@ public:
         return AstType::Call;
     }
 
+    [[nodiscard]] ExprNode* function() const { return m_function.get(); }
+
+    [[nodiscard]] std::vector<std::unique_ptr<ExprNode>>* arguments() const
+    {
+        return m_arguments.has_value() ? m_arguments.value().get() : nullptr;
+    }
+
 private:
     ExprNodePtr m_function;
     OptCallArgs m_arguments;
@@ -514,6 +525,13 @@ public:
     [[nodiscard]] AstType ast_type() const override
     {
         return AstType::Function;
+    }
+
+    [[nodiscard]] StmtNode* body() const { return m_body.get(); }
+
+    [[nodiscard]] std::vector<Identifier>* params() const
+    {
+        return m_params.has_value() ? m_params.value().get() : nullptr;
     }
 
 private:

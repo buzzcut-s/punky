@@ -45,6 +45,16 @@ const IfExpression* AstNode::if_expr() const
     return static_cast<const IfExpression*>(this);
 }
 
+const FunctionLiteral* AstNode::fn_lit() const
+{
+    return static_cast<const FunctionLiteral*>(this);
+}
+
+const CallExpression* AstNode::call_expr() const
+{
+    return static_cast<const CallExpression*>(this);
+}
+
 const ExpressionStmt* AstNode::expr_stmt() const
 {
     return static_cast<const ExpressionStmt*>(this);
