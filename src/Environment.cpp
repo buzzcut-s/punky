@@ -17,6 +17,13 @@ auto Environment::get(const std::string& name) const -> std::optional<obj::Objec
 {
     if (const auto res = m_store.find(name); res != m_store.cend())
         return res->second;
+
+    if (m_outer)
+    {
+        if (const auto outer_res = m_outer->get(name); outer_res.has_value())
+            return outer_res.value();
+    }
+
     return std::nullopt;
 }
 
