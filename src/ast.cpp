@@ -5,16 +5,6 @@
 namespace punky::ast
 {
 
-ExprNode* AstNode::expr()
-{
-    return static_cast<ExprNode*>(this);
-}
-
-StmtNode* AstNode::stmt()
-{
-    return static_cast<StmtNode*>(this);
-}
-
 const ExprNode* AstNode::expr() const
 {
     return static_cast<const ExprNode*>(this);
@@ -23,31 +13,6 @@ const ExprNode* AstNode::expr() const
 const StmtNode* AstNode::stmt() const
 {
     return static_cast<const StmtNode*>(this);
-}
-
-IntLiteral* AstNode::int_lit()
-{
-    return static_cast<IntLiteral*>(this);
-}
-
-Boolean* AstNode::boolean()
-{
-    return static_cast<Boolean*>(this);
-}
-
-PrefixExpression* AstNode::prefix_expr()
-{
-    return static_cast<PrefixExpression*>(this);
-}
-
-InfixExpression* AstNode::infix_expr()
-{
-    return static_cast<InfixExpression*>(this);
-}
-
-IfExpression* AstNode::if_expr()
-{
-    return static_cast<IfExpression*>(this);
 }
 
 const IntLiteral* AstNode::int_lit() const
@@ -73,21 +38,6 @@ const InfixExpression* AstNode::infix_expr() const
 const IfExpression* AstNode::if_expr() const
 {
     return static_cast<const IfExpression*>(this);
-}
-
-ExpressionStmt* AstNode::expr_stmt()
-{
-    return static_cast<ExpressionStmt*>(this);
-}
-
-BlockStmt* AstNode::block_stmt()
-{
-    return static_cast<BlockStmt*>(this);
-}
-
-ReturnStmt* AstNode::return_stmt()
-{
-    return static_cast<ReturnStmt*>(this);
 }
 
 const ExpressionStmt* AstNode::expr_stmt() const
