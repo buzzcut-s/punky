@@ -3,6 +3,7 @@
 #include <memory>
 #include <utility>
 
+#include "../include/Environment.hpp"
 #include "../include/Object.hpp"
 #include "../include/Token.hpp"
 #include "../include/ast.hpp"
@@ -26,6 +27,7 @@ static Object unknown_op_error(const Object& right);
 static Object unknown_op_error(const TokenType& op, const Object& right);
 static Object unknown_op_error(const TokenType& op, const Object& left, const Object& right);
 static Object type_mismatch_error(const TokenType& op, const Object& left, const Object& right);
+static Object unknown_ident_error(const ast::Identifier& ident);
 
 Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
   m_program{std::move(prog)}
@@ -39,10 +41,12 @@ Object Evaluator::interpret() const
 
 Object Evaluator::eval_program() const
 {
+    auto env = std::make_unique<env::Environment>();
+
     Object result{};
     for (const auto& stmt : m_program->statements())
     {
-        result = eval(*stmt);
+        result = eval(*stmt, *env);
 
         if (result.m_type == ObjectType::Return)
             return std::any_cast<Object>(std::get<std::any>(result.m_value));
@@ -53,21 +57,28 @@ Object Evaluator::eval_program() const
     return result;
 }
 
-Object Evaluator::eval(const ast::AstNode& node)
+Object Evaluator::eval(const ast::AstNode& node, env::Environment& env)
 {
     switch (node.ast_type())
     {
         case AstType::ExpressionStmt:
-            return eval(*node.expr_stmt()->expression());
+            return eval(*node.expr_stmt()->expression(), env);
 
         case AstType::BlockStmt:
-            return eval_block_statements(*node.block_stmt());
+            return eval_block_statements(*node.block_stmt(), env);
 
         case AstType::ReturnStmt:
         {
-            auto val = eval(*node.return_stmt()->ret_expr());
+            auto val = eval(*node.return_stmt()->ret_expr(), env);
             return is_error(val) ? val
                                  : Object{ObjectType::Return, val};
+        }
+
+        case AstType::LetStmt:
+        {
+            const auto val = eval(*node.let_stmt()->rhs(), env);
+            return is_error(val) ? val
+                                 : env.set(node.let_stmt()->lhs().name(), val);
         }
 
         case AstType::Int:
@@ -78,18 +89,18 @@ Object Evaluator::eval(const ast::AstNode& node)
 
         case AstType::Prefix:
         {
-            const auto right = eval(*node.prefix_expr()->right());
+            const auto right = eval(*node.prefix_expr()->right(), env);
             return is_error(right) ? right
                                    : eval_prefix_expr(node.expr()->type(), right);
         }
 
         case AstType::Infix:
         {
-            auto left = eval(*node.infix_expr()->left());
+            auto left = eval(*node.infix_expr()->left(), env);
             if (is_error(left))
                 return left;
 
-            auto right = eval(*node.infix_expr()->right());
+            auto right = eval(*node.infix_expr()->right(), env);
             if (is_error(right))
                 return right;
 
@@ -97,19 +108,22 @@ Object Evaluator::eval(const ast::AstNode& node)
         }
 
         case AstType::If:
-            return eval_if_expr(*node.if_expr());
+            return eval_if_expr(*node.if_expr(), env);
+
+        case AstType::Identifier:
+            return eval_identifier(*node.identifier(), env);
 
         default:
             return M_NULL_OBJ;
     }
 }
 
-Object Evaluator::eval_block_statements(const ast::BlockStmt& block)
+Object Evaluator::eval_block_statements(const ast::BlockStmt& block, env::Environment& env)
 {
     Object result{};
     for (const auto& stmt : block.statements())
     {
-        result = eval(*stmt);
+        result = eval(*stmt, env);
 
         if (result.m_type == ObjectType::Return || result.m_type == ObjectType::Error)
             return result;
@@ -223,20 +237,28 @@ Object Evaluator::eval_bool_infix_expr(const TokenType& op, const Object& left, 
     }
 }
 
-Object Evaluator::eval_if_expr(const ast::IfExpression& if_expr)
+Object Evaluator::eval_if_expr(const ast::IfExpression& if_expr, env::Environment& env)
 {
-    auto condition = eval(*if_expr.condition());
+    auto condition = eval(*if_expr.condition(), env);
 
     if (is_error(condition))
         return condition;
 
     if (is_truthy(condition))
-        return eval(*if_expr.consequence());
+        return eval(*if_expr.consequence(), env);
 
     if (if_expr.alternative())
-        return eval(*if_expr.alternative());
+        return eval(*if_expr.alternative(), env);
 
     return M_NULL_OBJ;
+}
+
+Object Evaluator::eval_identifier(const ast::Identifier& ident, env::Environment& env)
+{
+    auto val = env.get(ident.name());
+    if (val.has_value())
+        return val.value();
+    return unknown_ident_error(ident);
 }
 
 static bool is_truthy(const Object& obj)
@@ -284,6 +306,12 @@ static Object type_mismatch_error(const TokenType& op, const Object& left, const
     return Object{ObjectType::Error,
                   std::string("type mismatch: " + obj::type_to_string(left.m_type))
                     + " " + type_to_string(op) + " " + obj::type_to_string(right.m_type)};
+}
+
+static Object unknown_ident_error(const ast::Identifier& ident)
+{
+    return Object{ObjectType::Error,
+                  std::string("identifier not found: " + ident.name())};
 }
 
 }  // namespace punky::eval

@@ -6,10 +6,17 @@
 #include "Object.hpp"
 #include "ast.hpp"
 
-namespace punky::tok
+namespace punky
+{
+namespace tok
 {
 enum class TokenType;
 }
+namespace env
+{
+class Environment;
+}
+}  // namespace punky
 
 namespace punky::eval
 {
@@ -33,9 +40,9 @@ private:
 
     [[nodiscard]] Object eval_program() const;
 
-    static Object eval(const ast::AstNode& node);
+    static Object eval(const ast::AstNode& node, env::Environment& env);
 
-    static Object eval_block_statements(const ast::BlockStmt& block);
+    static Object eval_block_statements(const ast::BlockStmt& block, env::Environment& env);
 
     static Object eval_prefix_expr(const TokenType& op, const Object& right);
     static Object eval_bang_prefix_expr(const Object& right);
@@ -45,7 +52,8 @@ private:
     static Object eval_int_infix_expr(const TokenType& op, const Object& left, const Object& right);
     static Object eval_bool_infix_expr(const TokenType& op, const Object& left, const Object& right);
 
-    static Object eval_if_expr(const ast::IfExpression& if_expr);
+    static Object eval_if_expr(const ast::IfExpression& if_expr, env::Environment& env);
+    static Object eval_identifier(const ast::Identifier& ident, env::Environment& env);
 };
 
 }  // namespace punky::eval
