@@ -33,6 +33,7 @@ enum class AstType
 class ExprNode;
 class StmtNode;
 
+struct Identifier;
 class IntLiteral;
 class Boolean;
 class PrefixExpression;
@@ -42,6 +43,7 @@ class IfExpression;
 class ExpressionStmt;
 class BlockStmt;
 class ReturnStmt;
+class LetStmt;
 
 struct AstNode
 {
@@ -60,6 +62,7 @@ struct AstNode
     [[nodiscard]] const ExprNode* expr() const;
     [[nodiscard]] const StmtNode* stmt() const;
 
+    [[nodiscard]] const Identifier*       identifier() const;
     [[nodiscard]] const IntLiteral*       int_lit() const;
     [[nodiscard]] const Boolean*          boolean() const;
     [[nodiscard]] const PrefixExpression* prefix_expr() const;
@@ -69,6 +72,7 @@ struct AstNode
     [[nodiscard]] const ExpressionStmt* expr_stmt() const;
     [[nodiscard]] const BlockStmt*      block_stmt() const;
     [[nodiscard]] const ReturnStmt*     return_stmt() const;
+    [[nodiscard]] const LetStmt*        let_stmt() const;
 };
 
 class ExprNode : public AstNode
@@ -91,6 +95,11 @@ public:
     [[nodiscard]] AstType ast_type() const override = 0;
 
     [[nodiscard]] tok::TokenType type() const { return m_token.m_type; }
+
+protected:
+    [[nodiscard]] std::string tok_name() const { return m_token.m_literal.has_value()
+                                                          ? m_token.m_literal.value()
+                                                          : "novalue"; }
 
 private:
     Token m_token;
@@ -172,6 +181,8 @@ struct Identifier : public ExprNode
     {
         return AstType::Identifier;
     }
+
+    [[nodiscard]] std::string name() const { return tok_name(); }
 };
 
 class LetStmt : public StmtNode
@@ -196,6 +207,10 @@ public:
     {
         return AstType::LetStmt;
     }
+
+    [[nodiscard]] Identifier lhs() const { return m_name; }
+
+    [[nodiscard]] ExprNode* rhs() const { return m_value.get(); }
 
 private:
     Identifier  m_name;

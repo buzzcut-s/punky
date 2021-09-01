@@ -15,6 +15,11 @@ const StmtNode* AstNode::stmt() const
     return static_cast<const StmtNode*>(this);
 }
 
+const Identifier* AstNode::identifier() const
+{
+    return static_cast<const Identifier*>(this);
+}
+
 const IntLiteral* AstNode::int_lit() const
 {
     return static_cast<const IntLiteral*>(this);
@@ -53,6 +58,11 @@ const BlockStmt* AstNode::block_stmt() const
 const ReturnStmt* AstNode::return_stmt() const
 {
     return static_cast<const ReturnStmt*>(this);
+}
+
+const LetStmt* AstNode::let_stmt() const
+{
+    return static_cast<const LetStmt*>(this);
 }
 
 std::string ExprNode::token_literal() const
