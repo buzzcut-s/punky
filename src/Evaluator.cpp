@@ -36,7 +36,7 @@ Object Evaluator::interpret()
 Object Evaluator::eval_program()
 {
     Object result{};
-    for (const auto& stmt : m_program->m_statements)
+    for (const auto& stmt : m_program->statements())
     {
         result = eval(*stmt);
 
@@ -57,7 +57,7 @@ Object Evaluator::eval(const ast::AstNode& node)
             return eval(*node.expr_stmt()->expression());
 
         case AstType::BlockStmt:
-            return eval_block_statements(node.block_stmt()->m_blk_statements);
+            return eval_block_statements(*node.block_stmt());
 
         case AstType::ReturnStmt:
         {
@@ -100,10 +100,10 @@ Object Evaluator::eval(const ast::AstNode& node)
     }
 }
 
-Object Evaluator::eval_block_statements(const ast::StmtNodeVector& block)
+Object Evaluator::eval_block_statements(const ast::BlockStmt& block)
 {
     Object result{};
-    for (const auto& stmt : block)
+    for (const auto& stmt : block.statements())
     {
         result = eval(*stmt);
 

@@ -142,8 +142,9 @@ private:
 using StmtNodePtr    = std::unique_ptr<ast::StmtNode>;
 using StmtNodeVector = std::vector<StmtNodePtr>;
 
-struct Program : public AstNode
+class Program : public AstNode
 {
+public:
     Program()                     = default;
     Program(Program const& other) = delete;
     Program& operator=(Program const& other) = delete;
@@ -163,6 +164,9 @@ struct Program : public AstNode
 
     [[nodiscard]] tok::TokenType type() const final { return tok::TokenType::Illegal; }
 
+    StmtNodeVector& statements() { return m_statements; }
+
+private:
     StmtNodeVector m_statements;
 };
 
@@ -294,6 +298,9 @@ public:
         return AstType::BlockStmt;
     }
 
+    [[nodiscard]] const StmtNodeVector& statements() const { return m_blk_statements; }
+
+private:
     StmtNodeVector m_blk_statements;
 };
 

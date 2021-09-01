@@ -37,7 +37,7 @@ private:
 
     Object eval(const ast::AstNode& node);
 
-    Object eval_block_statements(const ast::StmtNodeVector& block);
+    Object eval_block_statements(const ast::BlockStmt& block);
 
     Object eval_prefix_expr(const TokenType& op, const Object& right);
     Object eval_bang_prefix_expr(const Object& right);
