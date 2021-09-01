@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "../include/Environment.hpp"
 #include "../include/Object.hpp"
@@ -12,6 +13,7 @@ namespace punky::eval
 {
 
 using punky::ast::AstType;
+using punky::obj::FunctionObject;
 using punky::obj::Object;
 using punky::obj::ObjectType;
 using punky::tok::TokenType;
@@ -28,6 +30,7 @@ static Object unknown_op_error(const TokenType& op, const Object& right);
 static Object unknown_op_error(const TokenType& op, const Object& left, const Object& right);
 static Object type_mismatch_error(const TokenType& op, const Object& left, const Object& right);
 static Object unknown_ident_error(const ast::Identifier& ident);
+static Object not_fn_error(const Object& not_fn);
 
 Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
   m_program{std::move(prog)}
@@ -113,6 +116,24 @@ Object Evaluator::eval(const ast::AstNode& node, env::Environment& env)
 
         case AstType::Identifier:
             return eval_identifier(*node.identifier(), env);
+
+        case AstType::Function:
+        {
+            // Fix this : This node.fn_lit() returned pointer is deleted at each repl.
+            return Object{ObjectType::Function, FunctionObject{node.fn_lit(), &env}};
+        }
+        case AstType::Call:
+        {
+            auto fn = eval(*node.call_expr()->function(), env);
+            if (is_error(fn))
+                return fn;
+
+            auto args = eval_expressions(*node.call_expr()->arguments(), env);
+            if (args.size() == 1 && is_error(args.front()))
+                return args.front();
+
+            return apply_function(fn, args);
+        }
 
         default:
             return M_NULL_OBJ;
@@ -262,6 +283,41 @@ Object Evaluator::eval_identifier(const ast::Identifier& ident, env::Environment
     return unknown_ident_error(ident);
 }
 
+std::vector<Object> Evaluator::eval_expressions(const Expressions& exprs, env::Environment& env)
+{
+    std::vector<Object> result;
+    for (const auto& expr : exprs)
+    {
+        auto evaluated = eval(*expr, env);
+        if (is_error(evaluated))
+            return std::vector<Object>{evaluated};
+
+        result.push_back(evaluated);
+    }
+    return result;
+}
+
+Object Evaluator::apply_function(const Object& fn, const std::vector<Object>& args)
+{
+    if (fn.m_type == ObjectType::Function)
+    {
+        auto f_obj  = std::get<FunctionObject>(fn.m_value);
+        auto fn_env = std::make_unique<env::Environment>(f_obj.env());
+
+        size_t      i = 0;
+        const auto& f = *f_obj.fn();
+
+        for (const auto& param : *f.fn_lit()->params())
+        {
+            fn_env->set(param.name(), args[i++]);
+        }
+
+        auto value = eval(*f_obj.fn()->fn_lit()->body(), *fn_env);
+        return value;
+    }
+    return not_fn_error(fn);
+}
+
 static bool is_truthy(const Object& obj)
 {
     switch (obj.m_type)
@@ -313,6 +369,12 @@ static Object unknown_ident_error(const ast::Identifier& ident)
 {
     return Object{ObjectType::Error,
                   std::string("identifier not found: " + ident.name())};
+}
+
+static Object not_fn_error(const Object& not_fn)
+{
+    return Object{ObjectType::Error,
+                  std::string("not a function: " + obj::type_to_string(not_fn.m_type))};
 }
 
 }  // namespace punky::eval
