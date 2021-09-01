@@ -15,25 +15,29 @@ using punky::obj::Object;
 using punky::obj::ObjectType;
 using punky::tok::TokenType;
 
-bool is_truthy(const Object& obj);
-bool is_error(const Object& obj);
+const Object Evaluator::M_TRUE_OBJ  = Object{ObjectType::Boolean, true};
+const Object Evaluator::M_FALSE_OBJ = Object{ObjectType::Boolean, false};
+const Object Evaluator::M_NULL_OBJ  = Object{ObjectType::Null, std::monostate{}};
 
-Object unknown_op_error(const Object& right);
-Object unknown_op_error(const TokenType& op, const Object& right);
-Object unknown_op_error(const TokenType& op, const Object& left, const Object& right);
-Object type_mismatch_error(const TokenType& op, const Object& left, const Object& right);
+static bool is_truthy(const Object& obj);
+static bool is_error(const Object& obj);
+
+static Object unknown_op_error(const Object& right);
+static Object unknown_op_error(const TokenType& op, const Object& right);
+static Object unknown_op_error(const TokenType& op, const Object& left, const Object& right);
+static Object type_mismatch_error(const TokenType& op, const Object& left, const Object& right);
 
 Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
   m_program{std::move(prog)}
 {
 }
 
-Object Evaluator::interpret()
+Object Evaluator::interpret() const
 {
     return eval_program();
 }
 
-Object Evaluator::eval_program()
+Object Evaluator::eval_program() const
 {
     Object result{};
     for (const auto& stmt : m_program->statements())
@@ -96,7 +100,7 @@ Object Evaluator::eval(const ast::AstNode& node)
             return eval_if_expr(*node.if_expr());
 
         default:
-            return m_null_obj;
+            return M_NULL_OBJ;
     }
 }
 
@@ -136,10 +140,10 @@ Object Evaluator::eval_bang_prefix_expr(const Object& right)
             return Object{ObjectType::Boolean, !std::get<bool>(right.m_value)};
 
         case ObjectType::Null:
-            return m_true_obj;
+            return M_TRUE_OBJ;
 
         default:
-            return m_false_obj;
+            return M_FALSE_OBJ;
     }
 }
 
@@ -232,10 +236,10 @@ Object Evaluator::eval_if_expr(const ast::IfExpression& if_expr)
     if (if_expr.alternative())
         return eval(*if_expr.alternative());
 
-    return m_null_obj;
+    return M_NULL_OBJ;
 }
 
-bool is_truthy(const Object& obj)
+static bool is_truthy(const Object& obj)
 {
     switch (obj.m_type)
     {
@@ -250,32 +254,32 @@ bool is_truthy(const Object& obj)
     }
 }
 
-bool is_error(const Object& obj)
+static bool is_error(const Object& obj)
 {
     return obj.m_type == ObjectType::Error;
 }
 
-Object unknown_op_error(const Object& right)
+static Object unknown_op_error(const Object& right)
 {
     return Object{ObjectType::Error,
                   std::string("unknown operator: -" + obj::type_to_string(right.m_type))};
 }
 
-Object unknown_op_error(const TokenType& op, const Object& right)
+static Object unknown_op_error(const TokenType& op, const Object& right)
 {
     return Object{ObjectType::Error,
                   std::string("unknown operator: " + type_to_string(op)
                               + obj::type_to_string(right.m_type))};
 }
 
-Object unknown_op_error(const TokenType& op, const Object& left, const Object& right)
+static Object unknown_op_error(const TokenType& op, const Object& left, const Object& right)
 {
     return Object{ObjectType::Error,
                   std::string("unknown operator: " + obj::type_to_string(left.m_type))
                     + " " + type_to_string(op) + " " + obj::type_to_string(right.m_type)};
 }
 
-Object type_mismatch_error(const TokenType& op, const Object& left, const Object& right)
+static Object type_mismatch_error(const TokenType& op, const Object& left, const Object& right)
 {
     return Object{ObjectType::Error,
                   std::string("type mismatch: " + obj::type_to_string(left.m_type))
