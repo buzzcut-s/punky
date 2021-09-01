@@ -4,6 +4,8 @@
 #include <string>
 #include <variant>
 
+#include "../include/ast.hpp"
+
 namespace punky::obj
 {
 
@@ -23,11 +25,17 @@ std::string inspect(const Object& obj)
         case ObjectType::Error:
             return std::get<std::string>(obj.m_value);
 
+        case ObjectType::Function:
+            return std::get<FunctionObject>(obj.m_value).fn()->to_string();
+
         case ObjectType::EmptyOut:
             return "";
 
         case ObjectType::Null:
             return "null";
+
+        default:
+            return "Default";
     }
 }
 
@@ -47,8 +55,17 @@ std::string type_to_string(const ObjectType& type)
         case ObjectType::Error:
             return "error";
 
+        case ObjectType::Function:
+            return "fn";
+
         case ObjectType::Null:
             return "null";
+
+        case ObjectType::EmptyOut:
+            return "";
+
+        default:
+            return "Default";
     }
 }
 
