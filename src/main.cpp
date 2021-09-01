@@ -31,16 +31,12 @@ int main()
             continue;
         }
 
-        std::cout << "ast print:\n";
-        if (prog)
-            std::cout << prog->to_string();
-
         auto eval = punky::eval::Evaluator{std::move(prog)};
 
         auto res = eval.interpret(*env);
 
-        std::cout << "result inspect:\n";
-        std::cout << punky::obj::inspect(res) << std::endl;
+        if (const auto out = punky::obj::inspect(res); !out.empty())
+            std::cout << out << std::endl;
     }
 
     return 0;

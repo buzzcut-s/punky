@@ -23,6 +23,9 @@ std::string inspect(const Object& obj)
         case ObjectType::Error:
             return std::get<std::string>(obj.m_value);
 
+        case ObjectType::EmptyOut:
+            return "";
+
         case ObjectType::Null:
             return "null";
     }

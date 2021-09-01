@@ -74,9 +74,12 @@ Object Evaluator::eval(const ast::AstNode& node, env::Environment& env)
 
         case AstType::LetStmt:
         {
-            const auto val = eval(*node.let_stmt()->rhs(), env);
-            return is_error(val) ? val
-                                 : env.set(node.let_stmt()->lhs().name(), val);
+            auto val = eval(*node.let_stmt()->rhs(), env);
+            if (is_error(val))
+                return val;
+
+            env.set(node.let_stmt()->lhs().name(), val);
+            return Object{ObjectType::EmptyOut, std::monostate{}};
         }
 
         case AstType::Int:
@@ -87,7 +90,7 @@ Object Evaluator::eval(const ast::AstNode& node, env::Environment& env)
 
         case AstType::Prefix:
         {
-            const auto right = eval(*node.prefix_expr()->right(), env);
+            auto right = eval(*node.prefix_expr()->right(), env);
             return is_error(right) ? right
                                    : eval_prefix_expr(node.expr()->type(), right);
         }

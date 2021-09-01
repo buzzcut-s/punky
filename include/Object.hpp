@@ -14,7 +14,8 @@ enum class ObjectType
     Int,
     Boolean,
     Return,
-    Error
+    Error,
+    EmptyOut
 };
 
 using ValVariant = std::variant<std::monostate, int, bool, std::any, std::string>;
