@@ -15,6 +15,16 @@ StmtNode* AstNode::stmt()
     return static_cast<StmtNode*>(this);
 }
 
+const ExprNode* AstNode::expr() const
+{
+    return static_cast<const ExprNode*>(this);
+}
+
+const StmtNode* AstNode::stmt() const
+{
+    return static_cast<const StmtNode*>(this);
+}
+
 IntLiteral* AstNode::int_lit()
 {
     return static_cast<IntLiteral*>(this);
@@ -40,6 +50,31 @@ IfExpression* AstNode::if_expr()
     return static_cast<IfExpression*>(this);
 }
 
+const IntLiteral* AstNode::int_lit() const
+{
+    return static_cast<const IntLiteral*>(this);
+}
+
+const Boolean* AstNode::boolean() const
+{
+    return static_cast<const Boolean*>(this);
+}
+
+const PrefixExpression* AstNode::prefix_expr() const
+{
+    return static_cast<const PrefixExpression*>(this);
+}
+
+const InfixExpression* AstNode::infix_expr() const
+{
+    return static_cast<const InfixExpression*>(this);
+}
+
+const IfExpression* AstNode::if_expr() const
+{
+    return static_cast<const IfExpression*>(this);
+}
+
 ExpressionStmt* AstNode::expr_stmt()
 {
     return static_cast<ExpressionStmt*>(this);
@@ -53,6 +88,21 @@ BlockStmt* AstNode::block_stmt()
 ReturnStmt* AstNode::return_stmt()
 {
     return static_cast<ReturnStmt*>(this);
+}
+
+const ExpressionStmt* AstNode::expr_stmt() const
+{
+    return static_cast<const ExpressionStmt*>(this);
+}
+
+const BlockStmt* AstNode::block_stmt() const
+{
+    return static_cast<const BlockStmt*>(this);
+}
+
+const ReturnStmt* AstNode::return_stmt() const
+{
+    return static_cast<const ReturnStmt*>(this);
 }
 
 std::string ExprNode::token_literal() const

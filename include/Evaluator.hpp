@@ -35,7 +35,7 @@ private:
 
     Object eval_program();
 
-    Object eval(ast::AstNode* node);
+    Object eval(const ast::AstNode& node);
 
     Object eval_block_statements(const ast::StmtNodeVector& block);
 
@@ -47,7 +47,7 @@ private:
     Object eval_int_infix_expr(const TokenType& op, const Object& left, const Object& right);
     Object eval_bool_infix_expr(const TokenType& op, const Object& left, const Object& right);
 
-    Object eval_if_expr(ast::IfExpression* if_expr);
+    Object eval_if_expr(const ast::IfExpression& if_expr);
 };
 
 }  // namespace punky::eval

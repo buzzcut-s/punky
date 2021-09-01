@@ -62,15 +62,28 @@ struct AstNode
     ExprNode* expr();
     StmtNode* stmt();
 
+    [[nodiscard]] const ExprNode* expr() const;
+    [[nodiscard]] const StmtNode* stmt() const;
+
     IntLiteral*       int_lit();
     Boolean*          boolean();
     PrefixExpression* prefix_expr();
     InfixExpression*  infix_expr();
     IfExpression*     if_expr();
 
+    [[nodiscard]] const IntLiteral*       int_lit() const;
+    [[nodiscard]] const Boolean*          boolean() const;
+    [[nodiscard]] const PrefixExpression* prefix_expr() const;
+    [[nodiscard]] const InfixExpression*  infix_expr() const;
+    [[nodiscard]] const IfExpression*     if_expr() const;
+
     ExpressionStmt* expr_stmt();
     BlockStmt*      block_stmt();
     ReturnStmt*     return_stmt();
+
+    [[nodiscard]] const ExpressionStmt* expr_stmt() const;
+    [[nodiscard]] const BlockStmt*      block_stmt() const;
+    [[nodiscard]] const ReturnStmt*     return_stmt() const;
 };
 
 class ExprNode : public AstNode
