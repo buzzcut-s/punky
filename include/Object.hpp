@@ -14,9 +14,10 @@ enum class ObjectType
     Int,
     Boolean,
     Return,
+    Error
 };
 
-using ValVariant = std::variant<std::monostate, int, bool, std::any>;
+using ValVariant = std::variant<std::monostate, int, bool, std::any, std::string>;
 
 struct Object
 {
@@ -25,6 +26,8 @@ struct Object
 };
 
 std::string inspect(const Object& obj);
+
+std::string type_to_string(const ObjectType& type);
 
 }  // namespace punky::obj
 

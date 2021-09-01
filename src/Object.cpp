@@ -20,6 +20,30 @@ std::string inspect(const Object& obj)
         case ObjectType::Return:
             return inspect(std::any_cast<Object>(obj));
 
+        case ObjectType::Error:
+            return std::get<std::string>(obj.m_value);
+
+        case ObjectType::Null:
+            return "null";
+    }
+}
+
+std::string type_to_string(const ObjectType& type)
+{
+    switch (type)
+    {
+        case ObjectType::Int:
+            return "int";
+
+        case ObjectType::Boolean:
+            return "boolean";
+
+        case ObjectType::Return:
+            return "return";
+
+        case ObjectType::Error:
+            return "error";
+
         case ObjectType::Null:
             return "null";
     }

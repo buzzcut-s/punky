@@ -16,6 +16,12 @@ using punky::obj::ObjectType;
 using punky::tok::TokenType;
 
 bool is_truthy(const Object& obj);
+bool is_error(const Object& obj);
+
+Object unknown_op_error(const Object& right);
+Object unknown_op_error(const tok::TokenType& op, const Object& right);
+Object unknown_op_error(const tok::TokenType& op, const Object& left, const Object& right);
+Object type_mismatch_error(const tok::TokenType& op, const Object& left, const Object& right);
 
 Evaluator::Evaluator(std::unique_ptr<ast::Program> prog) :
   m_program{std::move(prog)}
@@ -36,6 +42,9 @@ Object Evaluator::eval_program()
 
         if (result.m_type == ObjectType::Return)
             return std::any_cast<Object>(std::get<std::any>(result.m_value));
+
+        if (result.m_type == ObjectType::Error)
+            return result;
     }
     return result;
 }
@@ -53,7 +62,8 @@ Object Evaluator::eval(ast::AstNode* node)
         case AstType::ReturnStmt:
         {
             auto val = eval(node->return_stmt()->ret_expr());
-            return Object{ObjectType::Return, val};
+            return is_error(val) ? val
+                                 : Object{ObjectType::Return, val};
         }
 
         case AstType::Int:
@@ -65,13 +75,20 @@ Object Evaluator::eval(ast::AstNode* node)
         case AstType::Prefix:
         {
             const auto right = eval(node->prefix_expr()->right());
-            return eval_prefix_expr(node->expr()->type(), right);
+            return is_error(right) ? right
+                                   : eval_prefix_expr(node->expr()->type(), right);
         }
 
         case AstType::Infix:
         {
-            const auto left  = eval(node->infix_expr()->left());
-            const auto right = eval(node->infix_expr()->right());
+            auto left = eval(node->infix_expr()->left());
+            if (is_error(left))
+                return left;
+
+            auto right = eval(node->infix_expr()->right());
+            if (is_error(right))
+                return right;
+
             return eval_infix_expr(node->expr()->type(), left, right);
         }
 
@@ -90,7 +107,7 @@ Object Evaluator::eval_block_statements(const ast::StmtNodeVector& block)
     {
         result = eval(stmt.get());
 
-        if (result.m_type == ObjectType::Return)
+        if (result.m_type == ObjectType::Return || result.m_type == ObjectType::Error)
             return result;
     }
     return result;
@@ -107,7 +124,7 @@ Object Evaluator::eval_prefix_expr(const tok::TokenType& op, const Object& right
             return eval_minus_prefix_expr(right);
 
         default:
-            return Object{ObjectType::Null, std::monostate{}};
+            return unknown_op_error(op, right);
     }
 }
 
@@ -131,7 +148,7 @@ Object Evaluator::eval_minus_prefix_expr(const Object& right)
     if (right.m_type == ObjectType::Int)
         return Object{ObjectType::Int, -std::get<int>(right.m_value)};
 
-    return Object{ObjectType::Null, std::monostate{}};
+    return unknown_op_error(right);
 }
 
 Object Evaluator::eval_infix_expr(const tok::TokenType& op,
@@ -143,7 +160,10 @@ Object Evaluator::eval_infix_expr(const tok::TokenType& op,
     if (left.m_type == ObjectType::Boolean && right.m_type == ObjectType::Boolean)
         return eval_bool_infix_expr(op, left, right);
 
-    return Object{ObjectType::Null, std::monostate{}};
+    if (left.m_type != right.m_type)
+        return type_mismatch_error(op, left, right);
+
+    return unknown_op_error(op, left, right);
 }
 
 Object Evaluator::eval_int_infix_expr(const tok::TokenType& op,
@@ -179,7 +199,7 @@ Object Evaluator::eval_int_infix_expr(const tok::TokenType& op,
             return Object{ObjectType::Boolean, left_val != right_val};
 
         default:
-            return Object{ObjectType::Null, std::monostate{}};
+            return unknown_op_error(op, left, right);
     }
 }
 
@@ -198,13 +218,16 @@ Object Evaluator::eval_bool_infix_expr(const tok::TokenType& op,
             return Object{ObjectType::Boolean, left_val != right_val};
 
         default:
-            return Object{ObjectType::Null, std::monostate{}};
+            return unknown_op_error(op, left, right);
     }
 }
 
 Object Evaluator::eval_if_expr(ast::IfExpression* if_expr)
 {
     auto condition = eval(if_expr->condition());
+
+    if (is_error(condition))
+        return condition;
 
     if (is_truthy(condition))
         return eval(if_expr->consequence());
@@ -228,6 +251,41 @@ bool is_truthy(const Object& obj)
         default:
             return true;
     }
+}
+
+bool is_error(const Object& obj)
+{
+    return obj.m_type == ObjectType::Error;
+}
+
+Object unknown_op_error(const Object& right)
+{
+    return Object{ObjectType::Error, std::string("unknown operator: -"
+                                                 + obj::type_to_string(right.m_type))};
+}
+Object unknown_op_error(const tok::TokenType& op, const Object& right)
+{
+    return Object{ObjectType::Error, std::string("unknown operator: "
+                                                 + tok::type_to_string(op)
+                                                 + obj::type_to_string(right.m_type))};
+}
+
+Object unknown_op_error(const tok::TokenType& op, const Object& left, const Object& right)
+{
+    return Object{ObjectType::Error, std::string("unknown operator: "
+                                                 + obj::type_to_string(left.m_type))
+                                       + " "
+                                       + tok::type_to_string(op) + " "
+                                       + obj::type_to_string(right.m_type)};
+}
+
+Object type_mismatch_error(const tok::TokenType& op, const Object& left, const Object& right)
+{
+    return Object{ObjectType::Error, std::string("type mismatch: "
+                                                 + obj::type_to_string(left.m_type))
+                                       + " "
+                                       + tok::type_to_string(op) + " "
+                                       + obj::type_to_string(right.m_type)};
 }
 
 }  // namespace punky::eval
