@@ -205,11 +205,11 @@ std::string CallExpression::to_string() const
     return call_str;
 }
 
-std::optional<std::vector<std::unique_ptr<ExprNode>>*> CallExpression::arguments() const
+ExprNodeVector* CallExpression::arguments() const
 {
     if (m_arguments.has_value())
         return m_arguments.value().get();
-    return std::nullopt;
+    return nullptr;
 }
 
 std::string FunctionLiteral::to_string() const
@@ -235,11 +235,11 @@ std::string FunctionLiteral::to_string() const
     return fn_str;
 }
 
-std::optional<std::vector<punky::ast::Identifier>*> FunctionLiteral::params() const
+std::vector<punky::ast::Identifier>* FunctionLiteral::params() const
 {
     if (m_params.has_value())
         return m_params.value().get();
-    return std::nullopt;
+    return nullptr;
 }
 
 }  // namespace punky::ast
