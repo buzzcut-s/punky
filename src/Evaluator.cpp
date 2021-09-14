@@ -131,13 +131,9 @@ Object Evaluator::eval(const ast::AstNode& node, env::Environment& env)
             if (is_error(fn))
                 return fn;
 
-            std::vector<obj::Object> args;
-            if (auto* exprs = node.call_expr()->arguments(); exprs)
-            {
-                args = eval_expressions(*exprs, env);
-                if (args.size() == 1 && is_error(args.front()))
-                    return args.front();
-            }
+            auto args = eval_expressions(node.call_expr()->arguments(), env);
+            if (args.size() == 1 && is_error(args.front()))
+                return args.front();
 
             return apply_function(fn, args);
         }
@@ -289,18 +285,22 @@ Object Evaluator::eval_identifier(const ast::Identifier& ident, const env::Envir
     return unknown_ident_error(ident);
 }
 
-ObjectVector Evaluator::eval_expressions(const ast::ExprNodeVector& exprs, env::Environment& env)
+ObjectVector Evaluator::eval_expressions(const ast::ExprNodeVector* exprs, env::Environment& env)
 {
-    std::vector<Object> result;
-    for (const auto& expr : exprs)
+    if (exprs)
     {
-        auto evaluated = eval(*expr, env);
-        if (is_error(evaluated))
-            return std::vector<Object>{evaluated};
+        std::vector<Object> result;
+        for (const auto& expr : *exprs)
+        {
+            auto evaluated = eval(*expr, env);
+            if (is_error(evaluated))
+                return std::vector<Object>{evaluated};
 
-        result.push_back(evaluated);
+            result.push_back(evaluated);
+        }
+        return result;
     }
-    return result;
+    return {};
 }
 
 Object Evaluator::apply_function(const Object& fn, const ObjectVector& args)

@@ -58,7 +58,7 @@ private:
     static Object eval_if_expr(const ast::IfExpression& if_expr, env::Environment& env);
     static Object eval_identifier(const ast::Identifier& ident, const env::Environment& env);
 
-    static ObjectVector eval_expressions(const ast::ExprNodeVector& exprs, env::Environment& env);
+    static ObjectVector eval_expressions(const ast::ExprNodeVector* exprs, env::Environment& env);
 
     static Object apply_function(const Object& fn, const ObjectVector& args);
 };
