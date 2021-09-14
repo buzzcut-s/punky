@@ -6,7 +6,7 @@ Monkey is a programing language designed by Thorsten Ball for the books Writing 
 
 punky is tree-walking interpreter for Monkey written in C++.
 
-Here's how you would define a recursive function ```fib``` taking a single argument ```N``` for the fibonacci sequence in mal : 
+Here's how you would define a recursive function ```fib``` taking a single argument ```N``` for the fibonacci sequence in Monkey : 
 
 ```
 let fibonacci = fn(x) {
