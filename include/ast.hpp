@@ -512,7 +512,7 @@ public:
     ~FunctionLiteral() override                         = default;
 
     FunctionLiteral(Token tok, OptFnParams params,
-                    StmtNodePtr body) :
+                    std::unique_ptr<BlockStmt> body) :
       ExprNode{std::move(tok)},
       m_params{std::move(params)},
       m_body{std::move(body)}
@@ -530,8 +530,8 @@ public:
     [[nodiscard]] std::optional<std::vector<punky::ast::Identifier>*> params() const;
 
 private:
-    OptFnParams m_params;
-    StmtNodePtr m_body;
+    OptFnParams                m_params;
+    std::unique_ptr<BlockStmt> m_body;
 };
 
 }  // namespace punky::ast
