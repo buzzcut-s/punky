@@ -32,6 +32,27 @@ After executing, use the ```punky >>``` shell to provide input.
 # (extra)
 You can pass in a second string argument to the ```readline::read(input)``` call at ```main.cpp:18:31```[ (here) ](https://github.com/buzzcut-s/punky/blob/main/src/main.cpp#L18) to change the shell prompt from ```punky >>``` to anything else that your heart desires :D
 
+# Issue(s) and TODOs
+- With the way the AST (as std::unique_ptrs) and runtime Objects (as a std::variant of values) are handled internally right now, all AST state is deleted after execution finishes for a line. This works fine for Integer and Boolean literals since we always store them by value in our runtime Objects. However this does not work for Function literals as we currently only store an instance of a class which wraps around a pointer (see [here](https://github.com/buzzcut-s/punky/blob/f1be9faf2fd505566c7af5b707e2b70db0999e9a/include/FObject.hpp#L32)) in our runtime Function Object (extracted from the AST node - see [here](https://github.com/buzzcut-s/punky/blob/449c474ccb1d3692ac278312779ab88ac3fce394/src/Evaluator.cpp#L126)). This means all function state is deleted as soon as the line on which it was defined on finishes execution. In other words, functions must be defined and used on the same line - or else we access deleted memory. This also makes closures not work right now. 
+
+- We can observe this very trivially. Compare the following:
+    ```
+    punky >> let add = fn(x, y) { x + y; }; add(5,15);
+    20
+    ```
+    and 
+    ```
+    punky >> let add = fn(x,y) { x + y; };
+    punky >> add(5, 15);
+    terminate called after throwing an instance of 'std::bad_alloc'
+    what():  std::bad_alloc
+    Aborted (core dumped)
+    ```
+    This happens [here](https://github.com/buzzcut-s/punky/blob/449c474ccb1d3692ac278312779ab88ac3fce394/src/Evaluator.cpp#L329) when accessing params.name(). It's accessing members from the AST node FunctionLiteral, defined [here](https://github.com/buzzcut-s/punky/blob/99668957bab874918cd1e0ca85478edfbcebe1d0/include/ast.hpp#L531), which had already been deleted once the first line finished executing. 
+    - The easiest solution I can think of right now, which I've implemented elsewhere in another project as well, is to capture the state of these FunctionLiterals and store a copy (the pointer to which can then be stored in whichever environment necessary) elsewhere. This solves ownership and deletion issues, as global functions should stay around for the entire execution, always. 
+- Add more in-built data types : Strings, Arrays and Hashmaps.
+- Implement some built-in language functions.
+
 # Examples
 There are only examples beyond this point, just a heads-up.
 
