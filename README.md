@@ -76,6 +76,22 @@ punky >> true
 true
 ```
 
+- Bindings
+```
+punky >> let a = 5; let b = a; let c = a + b + 5; c;
+15
+punky >> let a = 5;
+punky >> let b = a > 3;
+punky >> let c = a * 99;
+punky >> if (b) { 10 } else { 1 };
+10
+punky >> let d = if (c > a) { 99 } else { 100 };
+punky >> d
+99
+punky >> d * c * a;
+245025
+```
+
 - Prefix operators
 ```
 punky >> !true
@@ -126,20 +142,13 @@ punky >> if (10 > 1) { true + false; }
 unknown operator: boolean + boolean
 ```
 
-- Bindings
+- Parsing errors
 ```
-punky >> let a = 5; let b = a; let c = a + b + 5; c;
-15
-punky >> let a = 5;
-punky >> let b = a > 3;
-punky >> let c = a * 99;
-punky >> if (b) { 10 } else { 1 };
-10
-punky >> let d = if (c > a) { 99 } else { 100 };
-punky >> d
-99
-punky >> d * c * a;
-245025
+punky >> let x = { 1, 2 }
+parser errors:
+        No prefix parse function found for token 'LEFT_BRACE'
+        No prefix parse function found for token 'COMMA'
+        No prefix parse function found for token 'RIGHT_BRACE'
 ```
 
 - Function and Function Calls
