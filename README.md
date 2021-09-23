@@ -32,6 +32,15 @@ After executing, use the ```punky >>``` shell to provide input.
 # (extra)
 You can pass in a second string argument to the ```readline::read(input)``` call at ```main.cpp:18:31```[ (here) ](https://github.com/buzzcut-s/punky/blob/main/src/main.cpp#L18) to change the shell prompt from ```punky >>``` to anything else that your heart desires :D
 
+
+# Implementation Details
+- punky has three phases - lexer, parser, and evaluator. A data structure joins each pair of phases. Tokens flow from lexer to parser, and an abstract syntax tree (AST) from parser to evaluator. The evaluator, then, runs the program.
+- Lexing / lexical analysis / tokenization : Converting a stream of characters (say, the source program) to a stream of Tokens.
+- Parsing : Converting a stream of symbols (in our case, Tokens) and produces a grammar conforming parse tree (AST).
+- Evaluating : Takes a well formed AST and evaluates it, by walking the tree. Hence, the term, tree walking interpreter.
+- A recursive Pratt parser is implemented for parsing. Pratt parsing was described by Vaughan R. Pratt in his paper ["Top Down Operator Precedence"](https://dl.acm.org/doi/10.1145/512927.512931), in 1973. This is used to handle operator precedence and infix expressions during the parsing phase. (see [```parse_expression()```](https://github.com/buzzcut-s/punky/blob/10d17ac00d0f2a277a04a8b7e522b32da6309373/src/Parser.cpp#L161)).
+- Error messages are produced in the parsing phase. In case of a parse error, evaluation does not occur. 
+
 # Issue(s) and TODOs
 - With the way the AST (as std::unique_ptrs) and runtime Objects (as a std::variant of values) are handled internally right now, all AST state is deleted after execution finishes for a line. This works fine for Integer and Boolean literals since we always store them by value in our runtime Objects. However this does not work for Function literals as we currently only store an instance of a class which wraps around a pointer (see [here](https://github.com/buzzcut-s/punky/blob/f1be9faf2fd505566c7af5b707e2b70db0999e9a/include/FObject.hpp#L32)) in our runtime Function Object (extracted from the AST node - see [here](https://github.com/buzzcut-s/punky/blob/449c474ccb1d3692ac278312779ab88ac3fce394/src/Evaluator.cpp#L126)). This means all function state is deleted as soon as the line on which it was defined on finishes execution. In other words, functions must be defined and used on the same line - or else we access deleted memory. This also makes closures not work right now. 
 
@@ -50,11 +59,14 @@ You can pass in a second string argument to the ```readline::read(input)``` call
     ```
     This happens [here](https://github.com/buzzcut-s/punky/blob/449c474ccb1d3692ac278312779ab88ac3fce394/src/Evaluator.cpp#L329) when accessing params.name(). It's accessing members from the AST node FunctionLiteral, defined [here](https://github.com/buzzcut-s/punky/blob/99668957bab874918cd1e0ca85478edfbcebe1d0/include/ast.hpp#L531), which had already been deleted once the first line finished executing. 
     - The easiest solution I can think of right now, which I've implemented elsewhere in another project as well, is to capture the state of these FunctionLiterals and store a copy (the pointer to which can then be stored in whichever environment necessary) elsewhere. This solves ownership and deletion issues, as global functions should stay around for the entire execution, always. 
+    - To also note is that we can also steal the function state from the AST (by moving it) and store that in the runtime Function Object. This would mean having a unique_ptr member. We use value semantics to pass Objects during runtime. So that's a no go.
 - Add more in-built data types : Strings, Arrays and Hashmaps.
 - Implement some built-in language functions.
 
 # Examples
 There are only examples beyond this point, just a heads-up.
+
+An example script can also be found in the examples directory.
 
 - Literals
 ```
