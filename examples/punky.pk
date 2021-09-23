@@ -1,0 +1,43 @@
+// Variable declarations
+let thresh = 66;
+
+let curr = 90;
+
+// Conditionals
+if (curr > thresh) {
+    let passed = true
+} else {
+    let passed = false
+}
+
+// Boolean
+passed;
+
+
+// Functions
+let max = fn(a, b)
+{
+    if ( a > b ) {
+        return a;
+    }
+    return b;
+}
+
+let new = 95;
+let curr = max(curr, new);
+curr;
+
+// Implicit returns
+let add = fn(x, y) 
+{ 
+    x + y; 
+} 
+
+let sum = add(curr + thresh, max(50, curr));
+
+if (sum == 256) {
+    let curr = 0;
+} else {
+    let curr = 100;
+}
+curr;
