@@ -52,7 +52,6 @@ class Parser
 public:
     explicit Parser(lex::Lexer lex);
 
-    void consume();
     auto errors() const { return m_errors; }
 
     auto parse_program() -> std::unique_ptr<ast::Program>;
@@ -71,6 +70,8 @@ private:
     std::unordered_map<TokenType, InfixParseFn>  m_infix_parse_fns;
 
     std::unordered_map<TokenType, PrecedenceLevel> m_precedences;
+
+    void consume();
 
     auto parse_statement() -> std::unique_ptr<ast::StmtNode>;
     auto parse_let_statement() -> std::unique_ptr<ast::LetStmt>;
