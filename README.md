@@ -17,7 +17,10 @@ mkdir build
 cd build/
 cmake -DCMAKE_BUILD_TYPE=Release ..
 cmake --build .
+cd src/
 ```
+
+The binary is built in the ```punky/build/src/``` directory
 
 To run :
 ``` 
