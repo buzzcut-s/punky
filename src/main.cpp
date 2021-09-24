@@ -2,11 +2,11 @@
 #include <memory>
 #include <string>
 
-#include "../include/Environment.hpp"
-#include "../include/Evaluator.hpp"
-#include "../include/Lexer.hpp"
-#include "../include/Parser.hpp"
-#include "../include/readline.hpp"
+#include <punky/Environment.hpp>
+#include <punky/Evaluator.hpp>
+#include <punky/Lexer.hpp>
+#include <punky/Parser.hpp>
+#include <punky/readline.hpp>
 
 static void repl(punky::env::Environment& env)
 {

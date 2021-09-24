@@ -1,4 +1,4 @@
-#include "../include/ast.hpp"
+#include "punky/ast.hpp"
 
 #include <string>
 

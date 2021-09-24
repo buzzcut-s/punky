@@ -1,11 +1,11 @@
-#include "../include/Lexer.hpp"
+#include "punky/Lexer.hpp"
 
 #include <iterator>
 #include <optional>
 #include <string>
 
-#include "../include/Token.hpp"
-#include "../include/utils.hpp"
+#include <punky/Token.hpp>
+#include <punky/utils.hpp>
 
 namespace punky::lex
 {

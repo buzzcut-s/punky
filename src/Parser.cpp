@@ -1,4 +1,4 @@
-#include "../include/Parser.hpp"
+#include "punky/Parser.hpp"
 
 #include <charconv>
 #include <functional>
@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "../include/Lexer.hpp"
-#include "../include/Token.hpp"
-#include "../include/ast.hpp"
+#include <punky/Lexer.hpp>
+#include <punky/Token.hpp>
+#include <punky/ast.hpp>
 
 namespace punky::par
 {

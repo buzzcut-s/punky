@@ -1,10 +1,10 @@
-#include "../include/Object.hpp"
+#include "punky/Object.hpp"
 
 #include <any>
 #include <string>
 #include <variant>
 
-#include "../include/ast.hpp"
+#include <punky/ast.hpp>
 
 namespace punky::obj
 {

@@ -1,13 +1,13 @@
-#include "../include/Evaluator.hpp"
+#include "punky/Evaluator.hpp"
 
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "../include/Environment.hpp"
-#include "../include/Object.hpp"
-#include "../include/Token.hpp"
-#include "../include/ast.hpp"
+#include <punky/Environment.hpp>
+#include <punky/Object.hpp>
+#include <punky/Token.hpp>
+#include <punky/ast.hpp>
 
 namespace punky::eval
 {

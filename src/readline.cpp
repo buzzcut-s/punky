@@ -1,6 +1,6 @@
 #include <string>
 
-#include "../lib/linenoise.hpp"
+#include "linenoise.hpp"
 
 namespace readline
 {

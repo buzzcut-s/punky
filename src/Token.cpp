@@ -1,4 +1,4 @@
-#include "../include/Token.hpp"
+#include "punky/Token.hpp"
 
 #include <string>
 #include <unordered_map>
