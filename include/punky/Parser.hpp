@@ -9,23 +9,7 @@
 
 #include "Lexer.hpp"
 #include "Token.hpp"
-
-namespace punky::ast
-{
-class ExprNode;
-class Program;
-class StmtNode;
-class LetStmt;
-class ReturnStmt;
-class ExpressionStmt;
-class BlockStmt;
-class Identifier;
-using ExprNodePtr    = std::unique_ptr<ExprNode>;
-using ExprNodeVector = std::vector<ExprNodePtr>;
-using OptFnParams    = std::optional<std::unique_ptr<std::vector<Identifier>>>;
-using OptCallArgs    = std::optional<std::unique_ptr<ExprNodeVector>>;
-using OptIfAltBlk    = std::optional<std::unique_ptr<BlockStmt>>;
-}  // namespace punky::ast
+#include "ast.hpp"
 
 namespace punky::par
 {

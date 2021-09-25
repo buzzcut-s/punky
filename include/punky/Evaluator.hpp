@@ -4,20 +4,10 @@
 #include <memory>
 #include <vector>
 
+#include "Environment.hpp"
 #include "Object.hpp"
+#include "Token.hpp"
 #include "ast.hpp"
-
-namespace punky
-{
-namespace tok
-{
-enum class TokenType;
-}
-namespace env
-{
-class Environment;
-}
-}  // namespace punky
 
 namespace punky::eval
 {

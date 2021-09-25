@@ -1,17 +1,12 @@
 #ifndef FOBJECT_HPP
 #define FOBJECT_HPP
 
-namespace punky
-{
-namespace ast
-{
-class FunctionLiteral;
-}
-namespace env
+#include "ast.hpp"
+
+namespace punky::env
 {
 class Environment;
 }
-}  // namespace punky
 
 namespace punky::obj
 {

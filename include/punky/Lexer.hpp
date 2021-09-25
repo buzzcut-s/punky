@@ -5,11 +5,7 @@
 #include <string>
 #include <unordered_map>
 
-namespace punky::tok
-{
-struct Token;
-enum class TokenType;
-}  // namespace punky::tok
+#include "Token.hpp"
 
 namespace punky::lex
 {
