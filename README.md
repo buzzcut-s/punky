@@ -66,6 +66,7 @@ An interpreter is a program that executes a source program written in a particul
     - To also note is that we can also steal the function state from the AST (by moving it) and store that in the runtime Function Object. This would mean having a unique_ptr member. We use value semantics to pass Objects during runtime. So that's a no go.
 - Add more in-built data types : Strings, Arrays and Hashmaps.
 - Implement some built-in language functions.
+- See [REVIEW_NOTES](https://github.com/buzzcut-s/punky/blob/main/REVIEW_NOTES.md) for more.
 
 # Examples
 There are only examples beyond this point, just a heads-up.
