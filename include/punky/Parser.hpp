@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include "Lexer.hpp"
@@ -34,11 +35,9 @@ enum class PrecedenceLevel
 class Parser
 {
 public:
-    explicit Parser(lex::Lexer lex);
+    explicit Parser(Lexer lex);
 
-    auto errors() const { return m_errors; }
-
-    auto parse_program() -> std::unique_ptr<ast::Program>;
+    auto parse_program() -> std::variant<bool, std::unique_ptr<ast::Program>>;
 
 private:
     using PrefixParseFn = std::function<ast::ExprNodePtr()>;

@@ -2,6 +2,7 @@
 
 #include <charconv>
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <optional>
 #include <unordered_map>
@@ -69,7 +70,7 @@ void Parser::consume()
     m_peek_tok = m_lex.next_token();
 }
 
-auto Parser::parse_program() -> std::unique_ptr<ast::Program>
+auto Parser::parse_program() -> std::variant<bool, std::unique_ptr<ast::Program>>
 {
     auto prog = std::make_unique<ast::Program>();
     while (!curr_type_is(TokenType::EOS))
@@ -77,6 +78,14 @@ auto Parser::parse_program() -> std::unique_ptr<ast::Program>
         if (auto stmt = parse_statement(); stmt)
             prog->push_stmt(std::move(stmt));
         consume();
+    }
+
+    if (!m_errors.empty())
+    {
+        std::cerr << "parser errors:\n";
+        for (const auto& error : m_errors)
+            std::cerr << "\t" + error + "\n";
+        return false;  // TODO(piyush): Throw instead
     }
     return prog;
 }

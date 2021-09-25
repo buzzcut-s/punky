@@ -6,6 +6,7 @@
 #include <punky/Evaluator.hpp>
 #include <punky/Lexer.hpp>
 #include <punky/Parser.hpp>
+#include <punky/ast.hpp>
 #include <punky/readline.hpp>
 
 static void repl()
@@ -19,17 +20,11 @@ static void repl()
         auto par = punky::par::Parser{lex};
 
         auto prog = par.parse_program();
-
-        auto errors = par.errors();
-        if (!errors.empty())
-        {
-            std::cerr << "parser errors:\n";
-            for (const auto& error : errors)
-                std::cerr << "\t" + error + "\n";
+        if (std::holds_alternative<bool>(prog))  // TODO(piyush): Catch instead
             continue;
-        }
 
-        auto eval = punky::eval::Evaluator{std::move(prog)};
+        auto eval = punky::eval::Evaluator{std::move(
+          std::get<std::unique_ptr<punky::ast::Program>>(prog))};
 
         auto res = eval.interpret(repl_env);
 
