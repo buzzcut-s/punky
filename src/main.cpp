@@ -8,8 +8,10 @@
 #include <punky/Parser.hpp>
 #include <punky/readline.hpp>
 
-static void repl(punky::env::Environment& env)
+static void repl()
 {
+    auto repl_env = punky::env::Environment();
+
     std::string line;
     while (readline::read(line))
     {
@@ -29,7 +31,7 @@ static void repl(punky::env::Environment& env)
 
         auto eval = punky::eval::Evaluator{std::move(prog)};
 
-        auto res = eval.interpret(env);
+        auto res = eval.interpret(repl_env);
 
         if (const auto out = punky::obj::inspect(res); !out.empty())
             std::cout << out << std::endl;
@@ -38,9 +40,7 @@ static void repl(punky::env::Environment& env)
 
 int main()
 {
-    auto env = std::make_unique<punky::env::Environment>();
-
-    repl(*env);
+    repl();
 
     return 0;
 }
