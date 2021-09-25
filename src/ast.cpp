@@ -78,13 +78,13 @@ const LetStmt* AstNode::let_stmt() const
 std::string ExprNode::token_literal() const
 {
     return m_token.m_literal.has_value() ? m_token.m_literal.value()
-                                         : type_to_string(m_token.m_type);
+                                         : tok::type_to_string(m_token.m_type);
 }
 
 std::string StmtNode::token_literal() const
 {
     return m_token.m_literal.has_value() ? m_token.m_literal.value()
-                                         : type_to_string(m_token.m_type);
+                                         : tok::type_to_string(m_token.m_type);
 }
 
 std::string Program::token_literal() const

@@ -361,7 +361,7 @@ static Object unknown_op_error(const Object& right)
 static Object unknown_op_error(const TokenType& op, const Object& right)
 {
     return Object{ObjectType::Error,
-                  std::string("unknown operator: " + type_to_string(op)
+                  std::string("unknown operator: " + tok::type_to_string(op)
                               + obj::type_to_string(right.m_type))};
 }
 
@@ -369,14 +369,14 @@ static Object unknown_op_error(const TokenType& op, const Object& left, const Ob
 {
     return Object{ObjectType::Error,
                   std::string("unknown operator: " + obj::type_to_string(left.m_type))
-                    + " " + type_to_string(op) + " " + obj::type_to_string(right.m_type)};
+                    + " " + tok::type_to_string(op) + " " + obj::type_to_string(right.m_type)};
 }
 
 static Object type_mismatch_error(const TokenType& op, const Object& left, const Object& right)
 {
     return Object{ObjectType::Error,
                   std::string("type mismatch: " + obj::type_to_string(left.m_type))
-                    + " " + type_to_string(op) + " " + obj::type_to_string(right.m_type)};
+                    + " " + tok::type_to_string(op) + " " + obj::type_to_string(right.m_type)};
 }
 
 static Object unknown_ident_error(const ast::Identifier& ident)

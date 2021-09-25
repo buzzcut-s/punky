@@ -173,7 +173,7 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr
     if (!prefix_fn)
     {
         m_errors.emplace_back("No prefix parse function found for token '"
-                              + type_to_string(m_curr_tok.m_type) + "'");
+                              + tok::type_to_string(m_curr_tok.m_type) + "'");
         return nullptr;
     }
 
@@ -184,7 +184,7 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr
         if (!infix_fn)
         {
             m_errors.emplace_back("No infix parse function found for token '"
-                                  + type_to_string(m_peek_tok.m_type) + "'");
+                                  + tok::type_to_string(m_peek_tok.m_type) + "'");
             return left_expr;
         }
         consume();
@@ -384,9 +384,9 @@ bool Parser::expect_peek(const TokenType& type)
 void Parser::peek_error(const TokenType& type)
 {
     m_errors.emplace_back("Expected next token to be "
-                          + type_to_string(type)
+                          + tok::type_to_string(type)
                           + ", but got "
-                          + type_to_string(m_peek_tok.m_type)
+                          + tok::type_to_string(m_peek_tok.m_type)
                           + " instead");
 }
 

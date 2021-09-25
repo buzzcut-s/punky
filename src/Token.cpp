@@ -104,7 +104,7 @@ std::string type_to_string(const TokenType& type)
 [[maybe_unused]] static std::string format_token(const Token& tok)
 {
     std::string tok_str{"{"};
-    tok_str.append(" type: " + type_to_string(tok.m_type) + ",");
+    tok_str.append(" type: " + tok::type_to_string(tok.m_type) + ",");
     if (tok.m_literal.has_value())
         tok_str.append(" literal: " + tok.m_literal.value() + " ");
     tok_str.append("}");
