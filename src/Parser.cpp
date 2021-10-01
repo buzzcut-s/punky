@@ -171,11 +171,7 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr
 {
     auto prefix_fn = m_prefix_parse_fns[m_curr_tok.m_type];
     if (!prefix_fn)
-    {
-        m_errors.emplace_back("No prefix parse function found for token '"
-                              + tok::type_to_string(m_curr_tok.m_type) + "'");
-        return nullptr;
-    }
+        return parse_fn_error(m_curr_tok.m_type, ParseFnType::Prefix);
 
     auto left_expr = prefix_fn();
     while (!peek_type_is(TokenType::Semicolon) && precedence < peek_precedence())
@@ -183,8 +179,7 @@ auto Parser::parse_expression(PrecedenceLevel precedence) -> ast::ExprNodePtr
         auto infix_fn = m_infix_parse_fns[m_peek_tok.m_type];
         if (!infix_fn)
         {
-            m_errors.emplace_back("No infix parse function found for token '"
-                                  + tok::type_to_string(m_peek_tok.m_type) + "'");
+            parse_fn_error(m_curr_tok.m_type, ParseFnType::Infix);
             return left_expr;
         }
         consume();
@@ -414,6 +409,17 @@ auto Parser::peek_precedence() const -> PrecedenceLevel
         peek_prec != m_precedences.cend())
         return peek_prec->second;
     return PrecedenceLevel::Lowest;
+}
+
+ast::ExprNodePtr Parser::parse_fn_error(TokenType tok_type, ParseFnType parse_type)
+{
+    if (parse_type == ParseFnType::Infix)
+        m_errors.emplace_back("No infix parse function found for token '"
+                              + tok::type_to_string(tok_type) + "'");
+    else
+        m_errors.emplace_back("No prefix parse function found for token '"
+                              + tok::type_to_string(tok_type) + "'");
+    return nullptr;
 }
 
 static auto make_precedence_map() -> std::unordered_map<TokenType, PrecedenceLevel>

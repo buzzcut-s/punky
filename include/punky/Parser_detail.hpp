@@ -21,6 +21,12 @@ enum class PrecedenceLevel
     Index,        // index
 };
 
+enum class ParseFnType
+{
+    Prefix,
+    Infix
+};
+
 }  // namespace punky::par
 
 #endif  // PARSER_COMMON_HPP

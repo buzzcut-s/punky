@@ -76,6 +76,8 @@ private:
 
     [[nodiscard]] auto curr_precedence() const -> PrecedenceLevel;
     [[nodiscard]] auto peek_precedence() const -> PrecedenceLevel;
+
+    auto parse_fn_error(TokenType tok_type, ParseFnType parse_type) -> ast::ExprNodePtr;
 };
 }  // namespace punky::par
 
