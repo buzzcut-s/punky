@@ -16,11 +16,10 @@
 namespace punky::par
 {
 
-static auto make_precedence_map() -> std::unordered_map<TokenType, PrecedenceLevel>;
+static constexpr auto precedence_lookup(TokenType type) -> PrecedenceLevel;
 
 Parser::Parser(Lexer lex) :
-  m_lex{std::move(lex)},
-  m_precedences{make_precedence_map()}
+  m_lex{std::move(lex)}
 {
     consume();
     consume();
@@ -397,18 +396,12 @@ void Parser::register_infix(TokenType type, InfixParseFn in_parse_fn)
 
 auto Parser::curr_precedence() const -> PrecedenceLevel
 {
-    if (const auto curr_prec = m_precedences.find(m_curr_tok.m_type);
-        curr_prec != m_precedences.cend())
-        return curr_prec->second;
-    return PrecedenceLevel::Lowest;
+    return precedence_lookup(m_curr_tok.m_type);
 }
 
 auto Parser::peek_precedence() const -> PrecedenceLevel
 {
-    if (const auto peek_prec = m_precedences.find(m_peek_tok.m_type);
-        peek_prec != m_precedences.cend())
-        return peek_prec->second;
-    return PrecedenceLevel::Lowest;
+    return precedence_lookup(m_peek_tok.m_type);
 }
 
 ast::ExprNodePtr Parser::parse_fn_error(TokenType tok_type, ParseFnType parse_type)
@@ -422,20 +415,29 @@ ast::ExprNodePtr Parser::parse_fn_error(TokenType tok_type, ParseFnType parse_ty
     return nullptr;
 }
 
-static auto make_precedence_map() -> std::unordered_map<TokenType, PrecedenceLevel>
+static constexpr auto precedence_lookup(TokenType type) -> PrecedenceLevel
 {
-    return std::unordered_map<TokenType, PrecedenceLevel>{
-      {TokenType::EqualEqual, PrecedenceLevel::Equals},
-      {TokenType::BangEqual, PrecedenceLevel::Equals},
-      {TokenType::Less, PrecedenceLevel::LessGreater},
-      {TokenType::Greater, PrecedenceLevel::LessGreater},
-      {TokenType::Plus, PrecedenceLevel::Sum},
-      {TokenType::Minus, PrecedenceLevel::Sum},
-      {TokenType::Asterisk, PrecedenceLevel::Product},
-      {TokenType::Slash, PrecedenceLevel::Product},
-      {TokenType::LeftParen, PrecedenceLevel::Call},
-      {TokenType::LeftBracket, PrecedenceLevel::Index},
-    };
+    switch (type)
+    {
+        case TokenType::EqualEqual:
+        case TokenType::BangEqual:
+            return PrecedenceLevel::Equals;
+        case TokenType::Less:
+        case TokenType::Greater:
+            return PrecedenceLevel::LessGreater;
+        case TokenType::Plus:
+        case TokenType::Minus:
+            return PrecedenceLevel::Sum;
+        case TokenType::Asterisk:
+        case TokenType::Slash:
+            return PrecedenceLevel::Product;
+        case TokenType::LeftParen:
+            return PrecedenceLevel::Call;
+        case TokenType::LeftBracket:
+            return PrecedenceLevel::Index;
+        default:
+            return PrecedenceLevel::Lowest;
+    }
 }
 
 }  // namespace punky::par

@@ -37,8 +37,6 @@ private:
     std::unordered_map<TokenType, PrefixParseFn> m_prefix_parse_fns;
     std::unordered_map<TokenType, InfixParseFn>  m_infix_parse_fns;
 
-    std::unordered_map<TokenType, PrecedenceLevel> m_precedences;
-
     void consume();
 
     auto parse_statement() -> std::unique_ptr<ast::StmtNode>;
@@ -79,6 +77,7 @@ private:
 
     auto parse_fn_error(TokenType tok_type, ParseFnType parse_type) -> ast::ExprNodePtr;
 };
+
 }  // namespace punky::par
 
 #endif  // PARSER_HPP
