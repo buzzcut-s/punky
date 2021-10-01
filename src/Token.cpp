@@ -6,22 +6,9 @@
 namespace punky::tok
 {
 
-auto make_token(TokenType type, std::optional<std::string> literal) -> Token
+auto make_token(TokenType type, TokenLiteral literal) -> Token
 {
     return Token{type, std::move(literal)};
-}
-
-auto make_keywords() -> std::unordered_map<std::string, TokenType>
-{
-    return std::unordered_map<std::string, TokenType>{
-      {"fn", TokenType::Func},
-      {"let", TokenType::Let},
-      {"true", TokenType::True},
-      {"false", TokenType::False},
-      {"if", TokenType::If},
-      {"else", TokenType::Else},
-      {"return", TokenType::Return},
-    };
 }
 
 std::string type_to_string(const TokenType& type)

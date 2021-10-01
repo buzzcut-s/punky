@@ -11,7 +11,6 @@ namespace punky::lex
 {
 
 using punky::tok::Token;
-using punky::tok::TokenType;
 
 class Lexer
 {
@@ -25,8 +24,6 @@ private:
     std::string::const_iterator m_curr_it;
     char                        m_curr_char;
 
-    std::unordered_map<std::string, TokenType> m_keywords;
-
     [[nodiscard]] bool next_eof() const;
 
     [[nodiscard]] auto peek() const -> std::optional<char>;
@@ -37,8 +34,6 @@ private:
 
     std::string tokenize_identifier();
     std::string tokenize_integer();
-
-    [[nodiscard]] auto token_type(const std::string& tok) const -> TokenType;
 };
 }  // namespace punky::lex
 

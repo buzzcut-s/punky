@@ -40,15 +40,15 @@ enum class TokenType
 };
 // clang-format on
 
+using TokenLiteral = std::optional<std::string>;
+
 struct Token
 {
-    TokenType                  m_type{};
-    std::optional<std::string> m_literal;
+    TokenType    m_type{};
+    TokenLiteral m_literal;
 };
 
-auto make_token(TokenType type, std::optional<std::string> literal) -> Token;
-
-auto make_keywords() -> std::unordered_map<std::string, TokenType>;
+auto make_token(TokenType type, TokenLiteral literal) -> Token;
 
 std::string type_to_string(const TokenType& type);
 

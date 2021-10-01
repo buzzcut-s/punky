@@ -10,11 +10,14 @@
 namespace punky::lex
 {
 
+using punky::tok::TokenType;
+
+static auto token_type(const std::string& tok) -> TokenType;
+
 Lexer::Lexer(std::string line) :
   m_line{std::move(line)},
   m_curr_it{m_line.cbegin()},
-  m_curr_char{*m_curr_it},
-  m_keywords{tok::make_keywords()}
+  m_curr_char{*m_curr_it}
 {
 }
 
@@ -119,9 +122,19 @@ std::string Lexer::tokenize_integer()
     return std::string{num_begin, m_curr_it};
 }
 
-auto Lexer::token_type(const std::string& tok) const -> TokenType
+static auto token_type(const std::string& tok) -> TokenType
 {
-    if (const auto res = m_keywords.find(tok); res != m_keywords.cend())
+    static const std::unordered_map<std::string, TokenType> M_KEYWORDS{
+      {"fn", TokenType::Func},
+      {"let", TokenType::Let},
+      {"true", TokenType::True},
+      {"false", TokenType::False},
+      {"if", TokenType::If},
+      {"else", TokenType::Else},
+      {"return", TokenType::Return},
+    };
+
+    if (const auto res = M_KEYWORDS.find(tok); res != M_KEYWORDS.cend())
         return res->second;
     return TokenType::Identifier;
 }
