@@ -22,10 +22,12 @@ public:
 
 private:
     std::string                 m_line;
-    std::string::const_iterator m_it;
-    char                        m_ch;
+    std::string::const_iterator m_curr_it;
+    char                        m_curr_char;
 
     std::unordered_map<std::string, TokenType> m_keywords;
+
+    [[nodiscard]] bool next_eof() const;
 
     [[nodiscard]] auto peek() const -> std::optional<char>;
 
@@ -33,8 +35,8 @@ private:
 
     void skip_whitespace();
 
-    std::string read_identifier();
-    std::string read_number();
+    std::string tokenize_identifier();
+    std::string tokenize_integer();
 
     [[nodiscard]] auto token_type(const std::string& tok) const -> TokenType;
 };
