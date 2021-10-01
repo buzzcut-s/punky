@@ -8,9 +8,7 @@
 #include <variant>
 #include <vector>
 
-#include "Lexer.hpp"
-#include "Token.hpp"
-#include "ast.hpp"
+#include "Parser_detail.hpp"
 
 namespace punky::par
 {
@@ -18,19 +16,6 @@ namespace punky::par
 using punky::lex::Lexer;
 using punky::tok::Token;
 using punky::tok::TokenType;
-
-enum class PrecedenceLevel
-{
-    _,  // 0
-    Lowest,
-    Equals,       // ==
-    LessGreater,  // > or <
-    Sum,          // + or -
-    Product,      // * or /
-    Prefix,       // -x or !x
-    Call,         // myFunc(x)
-    Index,        // index
-};
 
 class Parser
 {
