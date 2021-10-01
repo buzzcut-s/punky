@@ -82,7 +82,8 @@ private:
     [[nodiscard]] bool curr_type_is(const TokenType& type) const;
     [[nodiscard]] bool peek_type_is(const TokenType& type) const;
 
-    bool expect_peek(const TokenType& type);
+    [[nodiscard]] bool expect_peek_and_consume(const TokenType& type);
+
     void peek_error(const TokenType& type);
 
     void register_prefix(TokenType type, PrefixParseFn pre_parse_fn);

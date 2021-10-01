@@ -107,12 +107,12 @@ auto Parser::parse_let_statement() -> std::unique_ptr<ast::LetStmt>
 {
     auto let_tok = m_curr_tok;
 
-    if (!expect_peek(TokenType::Identifier))
+    if (!expect_peek_and_consume(TokenType::Identifier))
         return nullptr;
 
     auto ident = ast::Identifier(std::move(m_curr_tok));
 
-    if (!expect_peek(TokenType::Equal))
+    if (!expect_peek_and_consume(TokenType::Equal))
         return nullptr;
     consume();
 
@@ -245,7 +245,7 @@ auto Parser::parse_grouped_expression() -> ast::ExprNodePtr
     consume();
     auto expression = parse_expression(PrecedenceLevel::Lowest);
 
-    if (!expect_peek(TokenType::RightParen))
+    if (!expect_peek_and_consume(TokenType::RightParen))
         return nullptr;
 
     return expression;
@@ -255,15 +255,15 @@ auto Parser::parse_if_expression() -> ast::ExprNodePtr
 {
     auto if_tok = m_curr_tok;
 
-    if (!expect_peek(TokenType::LeftParen))
+    if (!expect_peek_and_consume(TokenType::LeftParen))
         return nullptr;
     consume();
 
     auto condition = parse_expression(PrecedenceLevel::Lowest);
 
-    if (!expect_peek(TokenType::RightParen))
+    if (!expect_peek_and_consume(TokenType::RightParen))
         return nullptr;
-    if (!expect_peek(TokenType::LeftBrace))
+    if (!expect_peek_and_consume(TokenType::LeftBrace))
         return nullptr;
 
     auto consequence = parse_block_statement();
@@ -272,7 +272,7 @@ auto Parser::parse_if_expression() -> ast::ExprNodePtr
     if (peek_type_is(TokenType::Else))
     {
         consume();
-        if (!expect_peek(TokenType::LeftBrace))
+        if (!expect_peek_and_consume(TokenType::LeftBrace))
             return nullptr;
 
         alternative = parse_block_statement();
@@ -286,12 +286,12 @@ auto Parser::parse_function_literal() -> ast::ExprNodePtr
 {
     auto func_tok = m_curr_tok;
 
-    if (!expect_peek(TokenType::LeftParen))
+    if (!expect_peek_and_consume(TokenType::LeftParen))
         return nullptr;
 
     auto params = parse_function_params();
 
-    if (!expect_peek(TokenType::LeftBrace))
+    if (!expect_peek_and_consume(TokenType::LeftBrace))
         return nullptr;
 
     auto body = parse_block_statement();
@@ -319,7 +319,7 @@ auto Parser::parse_function_params() -> ast::OptFnParams
         params.push_back(std::move(ident));
     }
 
-    if (!expect_peek(TokenType::RightParen))
+    if (!expect_peek_and_consume(TokenType::RightParen))
         return nullptr;
 
     return std::make_unique<std::vector<ast::Identifier>>(std::move(params));
@@ -354,7 +354,7 @@ auto Parser::parse_call_arguments() -> ast::OptCallArgs
         args.push_back(std::move(args_expr));
     }
 
-    if (!expect_peek(TokenType::RightParen))
+    if (!expect_peek_and_consume(TokenType::RightParen))
         return nullptr;
 
     return std::make_unique<ast::ExprNodeVector>(std::move(args));
@@ -370,7 +370,7 @@ bool Parser::peek_type_is(const TokenType& type) const
     return m_peek_tok.m_type == type;
 }
 
-bool Parser::expect_peek(const TokenType& type)
+bool Parser::expect_peek_and_consume(const TokenType& type)
 {
     if (peek_type_is(type))
     {
